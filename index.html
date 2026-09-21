@@ -30,204 +30,249 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-  <!-- ======================================================== -->
-  <!-- 1. THANH HEADER -->
-  <!-- ======================================================== -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      
-      <!-- Logo & Tiêu đề -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-indigo-100 shrink-0">
-          QLCN
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
-              Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN Phòng QLCN
-            </h1>
-            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Hệ thống trực tuyến"></span>
-          </div>
-          <p id="headerPeriodSubtitle" class="text-xs text-indigo-700 font-semibold mt-0.5">
-            Kỳ Báo Cáo Tháng 9 • Tuần 34 (Chốt số liệu ngày 25)
-          </p>
-        </div>
-      </div>
-
-      <!-- Khu vực Tài khoản & Nút điều khiển -->
-      <div class="flex items-center flex-wrap gap-2">
+  <div>
+    <!-- ======================================================== -->
+    <!-- 1. HEADER CHUYÊN NGHIỆP (CÓ LOGO, ĐƠN VỊ & ĐỊA CHỈ) -->
+    <!-- ======================================================== -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         
-        <!-- Trạng thái Chưa đăng nhập -->
-        <div id="headerGuestArea" class="flex items-center gap-2">
-          <div class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-600 font-medium">
-            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-            <span>Chế độ: <b>Chỉ xem</b></span>
+        <!-- Logo & Thông tin đơn vị -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-blue-700 text-white flex items-center justify-center font-black text-lg shadow-lg shadow-indigo-200 shrink-0">
+            QLCN
           </div>
-
-          <button onclick="openLoginModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-            <span>Đăng Nhập</span>
-          </button>
-        </div>
-
-        <!-- Trạng thái Đã đăng nhập -->
-        <div id="headerUserArea" class="hidden flex items-center gap-2">
-          <button id="btnAdminPeriodConfig" onclick="openPeriodConfigModal()" class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <span>⚙️ Đổi Kỳ Báo Cáo (Ngày 25)</span>
-          </button>
-
-          <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span id="navUserName" class="font-bold text-slate-800">Admin</span>
-            <span id="navUserBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-800">Admin</span>
-          </div>
-
-          <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition">
-            Đăng xuất
-          </button>
-        </div>
-
-        <!-- MỞ THƯ MỤC GOOGLE DRIVE -->
-        <a href="https://drive.google.com/drive/folders/1CG75B4ESATCjHOH2hPGiMkgNii0WyxvX" 
-           target="_blank" 
-           title="Mở thư mục Google Drive chứa 4 file báo cáo gốc"
-           class="px-3 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
-          <span>Drive Gốc</span>
-        </a>
-
-        <!-- Link Sheet Gốc 3CS -->
-        <a href="https://docs.google.com/spreadsheets/d/1x7j6HwGWrx1daoaku4avJDr1m8mC-jNnRplzFrFi7OI/edit?usp=sharing" 
-           target="_blank" 
-           class="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
-          <span>Sheet Gốc</span>
-        </a>
-
-      </div>
-    </div>
-  </header>
-
-  <!-- ======================================================== -->
-  <!-- 2. GIAO DIỆN CHÍNH DASHBOARD -->
-  <!-- ======================================================== -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-    
-    <!-- Banner kỳ báo cáo ngày 25 -->
-    <div class="mb-5 p-3.5 bg-gradient-to-r from-indigo-50 via-slate-50 to-indigo-50 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
-      <div class="flex items-center gap-2.5 text-slate-700">
-        <span class="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg font-bold">📅</span>
-        <span>
-          <b class="text-indigo-900" id="bannerPeriodText">Kỳ Báo Cáo: Tháng 9 • Tuần 34</b> | Chốt số liệu vào <b>ngày 25</b> hàng tháng. 
-          <span id="bannerPeriodNote" class="text-slate-500 italic">(Lưu trữ tự động vào Folder Google Drive của Phòng)</span>
-        </span>
-      </div>
-      <div>
-        <button onclick="openLoginModal()" class="text-indigo-600 font-bold hover:text-indigo-800 underline whitespace-nowrap text-left sm:text-right">
-          Cán bộ cơ sở đăng nhập →
-        </button>
-      </div>
-    </div>
-
-    <!-- HÀNG 6 TAB BÁO CÁO CHÍNH -->
-    <div class="mb-6">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">6 Loại Báo Cáo Chuyên Đề:</span>
-        <span class="text-xs text-indigo-600 font-medium">* Bấm chọn báo cáo để xem hoặc nhập số liệu 3 Cơ sở</span>
-      </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="mainTabsContainer"></div>
-    </div>
-
-    <!-- KHUNG CHÍNH: 2 CỘT -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- CỘT TRÁI: TIẾN ĐỘ & BIỂU ĐỒ RADAR CÔNG NGHỆ (4 Cột) -->
-      <section class="lg:col-span-4 flex flex-col gap-5">
-        
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
-            <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
-              Đang thực hiện
-            </span>
-          </div>
-          <div class="mt-3 flex items-baseline justify-between">
-            <span id="overall-percent" class="text-4xl font-black text-slate-900">0%</span>
-            <span id="overall-fraction" class="text-xs font-semibold text-slate-400">0 / 18 cơ sở</span>
-          </div>
-          <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
-            <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-          </div>
-        </div>
-
-        <!-- Biểu đồ Radar đa chiều hiện đại -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
-          <div class="flex items-center justify-between mb-2">
-            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-              <span>🌐</span> Biểu Đồ Radar Đa Chiều
-            </h2>
-            <span class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Real-time</span>
-          </div>
-          <div class="relative h-[290px] w-full flex items-center justify-center">
-            <canvas id="progressChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Nút xuất tổng thể -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <button onclick="exportAllMasterExcel()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow transition flex flex-col items-center justify-center gap-1">
-            <div class="flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
-              <span>Xuất File Toàn Bộ 6 Báo Cáo (.xlsx)</span>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
+                CHI CỤC CHĂN NUÔI VÀ THÚ Y • PHÒNG QUẢN LÝ CHĂN NUÔI
+              </h1>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Trực tuyến
+              </span>
             </div>
-            <span id="btnMasterExportFileName" class="text-[10px] text-slate-300 font-mono font-normal truncate max-w-full">
-              Capnhatthongke2026_3CS - Tháng 9 - Tuần 34.xlsx
-            </span>
-          </button>
+            <p id="headerPeriodSubtitle" class="text-xs text-indigo-700 font-semibold mt-0.5">
+              Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN • Kỳ Báo Cáo Tháng 9 • Tuần 34
+            </p>
+          </div>
         </div>
-      </section>
 
-      <!-- CỘT PHẢI: KHUNG LÀM VIỆC 4 TAB CON (8 Cột) -->
-      <section class="lg:col-span-8 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-        
-        <!-- THANH 4 TAB CON -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-4">
-          <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
-            <button onclick="switchSubTab('cs1')" id="subTabBtn_cs1" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-              🏢 Báo cáo CS1 (TP.HCM)
-            </button>
-            <button onclick="switchSubTab('cs2')" id="subTabBtn_cs2" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-              🏭 Báo cáo CS2 (Bình Dương)
-            </button>
-            <button onclick="switchSubTab('cs3')" id="subTabBtn_cs3" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-              🚢 Báo cáo CS3 (BR-VT)
-            </button>
-            <button onclick="switchSubTab('gop')" id="subTabBtn_gop" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-              📊 Xuất Báo Cáo Tổng
+        <!-- Khu vực Tài khoản & Nút tiện ích -->
+        <div class="flex items-center flex-wrap gap-2">
+          
+          <!-- Trạng thái Chưa đăng nhập -->
+          <div id="headerGuestArea" class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-600 font-medium">
+              <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              <span>Chế độ: <b>Chỉ xem</b></span>
+            </div>
+
+            <button onclick="openLoginModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+              <span>Đăng Nhập</span>
             </button>
           </div>
 
-          <span id="csCurrentStatusBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-            Đã hoàn thành
+          <!-- Trạng thái Đã đăng nhập -->
+          <div id="headerUserArea" class="hidden flex items-center gap-2">
+            <button id="btnAdminPeriodConfig" onclick="openPeriodConfigModal()" class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span>⚙️ Đổi Kỳ Báo Cáo</span>
+            </button>
+
+            <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span id="navUserName" class="font-bold text-slate-800">Admin</span>
+              <span id="navUserBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-800">Admin</span>
+            </div>
+
+            <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition">
+              Đăng xuất
+            </button>
+          </div>
+
+          <!-- Mở Drive Gốc -->
+          <a href="https://drive.google.com/drive/folders/1CG75B4ESATCjHOH2hPGiMkgNii0WyxvX" 
+             target="_blank" 
+             title="Mở thư mục Google Drive"
+             class="px-3 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
+            <span>Drive Gốc</span>
+          </a>
+
+          <!-- Sheet Gốc -->
+          <a href="https://docs.google.com/spreadsheets/d/1x7j6HwGWrx1daoaku4avJDr1m8mC-jNnRplzFrFi7OI/edit?usp=sharing" 
+             target="_blank" 
+             class="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+            <span>Sheet Gốc</span>
+          </a>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================== -->
+    <!-- 2. GIAO DIỆN CHÍNH DASHBOARD -->
+    <!-- ======================================================== -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      
+      <!-- Banner kỳ báo cáo -->
+      <div class="mb-5 p-3.5 bg-gradient-to-r from-indigo-50 via-slate-50 to-indigo-50 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+        <div class="flex items-center gap-2.5 text-slate-700">
+          <span class="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg font-bold">📅</span>
+          <span>
+            <b class="text-indigo-900" id="bannerPeriodText">Kỳ Báo Cáo: Tháng 9 • Tuần 34</b> | Chốt số liệu vào <b>ngày 25</b> hàng tháng. 
+            <span id="bannerPeriodNote" class="text-slate-500 italic">(Lưu trữ tự động vào Folder Google Drive của Phòng)</span>
           </span>
         </div>
+        <div>
+          <button onclick="openLoginModal()" class="text-indigo-600 font-bold hover:text-indigo-800 underline whitespace-nowrap text-left sm:text-right">
+            Cán bộ cơ sở đăng nhập →
+          </button>
+        </div>
+      </div>
 
-        <!-- KHUNG NỘI DUNG FORM / GỘP -->
-        <div id="subTabContentContainer" class="flex-1 flex flex-col justify-between"></div>
+      <!-- HÀNG 6 TAB BÁO CÁO CHÍNH -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">6 Loại Báo Cáo Chuyên Đề:</span>
+          <span class="text-xs text-indigo-600 font-medium">* Bấm chọn báo cáo để xem hoặc nhập số liệu 3 Cơ sở</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="mainTabsContainer"></div>
+      </div>
 
-      </section>
+      <!-- KHUNG CHÍNH: 2 CỘT -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    </div>
-  </main>
+        <!-- CỘT TRÁI: TIẾN ĐỘ & BIỂU ĐỒ RADAR (4 Cột) -->
+        <section class="lg:col-span-4 flex flex-col gap-5">
+          
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
+              <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
+                Đang thực hiện
+              </span>
+            </div>
+            <div class="mt-3 flex items-baseline justify-between">
+              <span id="overall-percent" class="text-4xl font-black text-slate-900">0%</span>
+              <span id="overall-fraction" class="text-xs font-semibold text-slate-400">0 / 18 cơ sở</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
+              <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <span>🌐</span> Biểu Đồ Radar Đa Chiều
+              </h2>
+              <span class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded">Real-time</span>
+            </div>
+            <div class="relative h-[290px] w-full flex items-center justify-center">
+              <canvas id="progressChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Khối xuất Excel tổng thể -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <button onclick="exportAllMasterExcel()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow transition flex flex-col items-center justify-center gap-1">
+              <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+                <span>Xuất File Toàn Bộ 6 Báo Cáo (.xlsx)</span>
+              </div>
+              <span id="btnMasterExportFileName" class="text-[10px] text-slate-300 font-mono font-normal truncate max-w-full">
+                Capnhatthongke2026_3CS - Tháng 9 - Tuần 34.xlsx
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <!-- CỘT PHẢI: KHUNG LÀM VIỆC 4 TAB CON (8 Cột) -->
+        <section class="lg:col-span-8 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+          
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-4">
+            <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
+              <button onclick="switchSubTab('cs1')" id="subTabBtn_cs1" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                🏢 Báo cáo CS1 (TP.HCM)
+              </button>
+              <button onclick="switchSubTab('cs2')" id="subTabBtn_cs2" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                🏭 Báo cáo CS2 (Bình Dương)
+              </button>
+              <button onclick="switchSubTab('cs3')" id="subTabBtn_cs3" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                🚢 Báo cáo CS3 (BR-VT)
+              </button>
+              <button onclick="switchSubTab('gop')" id="subTabBtn_gop" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+                📊 Xuất Báo Cáo Tổng
+              </button>
+            </div>
+
+            <span id="csCurrentStatusBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+              Đã hoàn thành
+            </span>
+          </div>
+
+          <div id="subTabContentContainer" class="flex-1 flex flex-col justify-between"></div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
 
   <!-- ======================================================== -->
-  <!-- 3. HỘP THOẠI ĐIỀU CHỈNH KỲ BÁO CÁO (ADMIN) -->
+  <!-- 3. FOOTER CHUYÊN NGHIỆP (THÔNG TIN ĐƠN VỊ & CHUYÊN VIÊN) -->
+  <!-- ======================================================== -->
+  <footer class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-12 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+      
+      <!-- Cột 1: Thông tin cơ quan -->
+      <div>
+        <div class="flex items-center gap-2.5 mb-2.5">
+          <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
+            QLCN
+          </div>
+          <h3 class="text-white font-bold text-sm">Phòng Quản Lý Chăn Nuôi</h3>
+        </div>
+        <p class="text-slate-400 leading-relaxed">
+          Đơn vị trực thuộc Chi cục Chăn nuôi và Thú y.<br>
+          Quản lý số liệu định kỳ 3 Cơ sở (TP.HCM, Bình Dương, Bà Rịa - Vũng Tàu).
+        </p>
+      </div>
+
+      <!-- Cột 2: Địa chỉ & Liên hệ -->
+      <div>
+        <h4 class="text-white font-bold text-xs uppercase tracking-wider mb-2.5 border-b border-slate-800 pb-1">Thông Tin Trụ Sở</h4>
+        <p class="text-slate-400 space-y-1">
+          📍 <b>Địa chỉ:</b> Thành phố Hồ Chí Minh, Việt Nam.<br>
+          📞 <b>Điện thoại:</b> (028) 0000 0000<br>
+          ✉️ <b>Email:</b> phongqlcn@chicuccnnv.gov.vn
+        </p>
+      </div>
+
+      <!-- Cột 3: Chuyên viên phụ trách & Bản quyền -->
+      <div>
+        <h4 class="text-white font-bold text-xs uppercase tracking-wider mb-2.5 border-b border-slate-800 pb-1">Hỗ Trợ Kỹ Thuật & Nghiệp Vụ</h4>
+        <p class="text-slate-400 space-y-1">
+          👨‍💻 <b>Chuyên viên phụ trách DLCN:</b> Luật Định Nguyễn<br>
+          🕒 <b>Thời gian làm việc:</b> Thứ Hai – Thứ Sáu (8:00 - 17:00)<br>
+          <span class="text-slate-500 mt-2 block">© 2026 Phòng QLCN. All rights reserved.</span>
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ======================================================== -->
+  <!-- 4. MODAL ĐIỀU CHỈNH KỲ BÁO CÁO (ADMIN) -->
   <!-- ======================================================== -->
   <div id="periodConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 relative">
@@ -293,7 +338,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 4. HỘP THOẠI ĐĂNG NHẬP (POPUP) -->
+  <!-- 5. HỘP THOẠI ĐĂNG NHẬP (POPUP) -->
   <!-- ======================================================== -->
   <div id="loginModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 relative">
@@ -342,13 +387,13 @@
 
 
   <!-- ======================================================== -->
-  <!-- 5. JAVASCRIPT: LOGIC & BIỂU ĐỒ RADAR -->
+  <!-- 6. JAVASCRIPT: LOGIC & BIỂU ĐỒ RADAR -->
   <!-- ======================================================== -->
   <script>
     const GOOGLE_APPS_SCRIPT_URL = ""; 
     const GOOGLE_DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1CG75B4ESATCjHOH2hPGiMkgNii0WyxvX";
 
-    const STORAGE_KEY_PERIOD = "app_config_ky_baocao_v9";
+    const STORAGE_KEY_PERIOD = "app_config_ky_baocao_v10";
     const defaultPeriodConfig = {
       tenFileGoc: "Capnhatthongke2026_3CS",
       thang: "Tháng 9",
@@ -414,7 +459,7 @@
 
     function renderPeriodUI() {
       const cfg = getPeriodConfig();
-      document.getElementById("headerPeriodSubtitle").innerText = `Kỳ Báo Cáo ${cfg.thang} • ${cfg.tuan} (Chốt số liệu ngày ${cfg.ngayChot})`;
+      document.getElementById("headerPeriodSubtitle").innerText = `Phòng Quản Lý Chăn Nuôi • Kỳ Báo Cáo ${cfg.thang} • ${cfg.tuan} (Chốt số liệu ngày ${cfg.ngayChot})`;
       document.getElementById("bannerPeriodText").innerText = `Kỳ Báo Cáo: ${cfg.thang} • ${cfg.tuan}`;
       if (cfg.ghiChu) document.getElementById("bannerPeriodNote").innerText = `(${cfg.ghiChu})`;
       document.getElementById("btnMasterExportFileName").innerText = buildExportFileName();
@@ -492,7 +537,7 @@
       }
     };
 
-    const STORAGE_KEY_MASTER = "app_master_data_v9";
+    const STORAGE_KEY_MASTER = "app_master_data_v10";
     function initOrGetMasterData() {
       const stored = localStorage.getItem(STORAGE_KEY_MASTER);
       if (stored) return JSON.parse(stored);
@@ -700,7 +745,6 @@
         `;
       }
 
-      // KẾT HỢP GỢI Ý 1 VÀ 2: HIỂN THỊ TRẠNG THÁI KIỂM DUYỆT VÀ NÚT ĐĂNG NHẬP THAY THẾ KHI CHƯA ĐĂNG NHẬP
       let actionFooterHtml = "";
       if (canEdit) {
         actionFooterHtml = `
@@ -921,9 +965,6 @@
       }
     }
 
-    // ------------------------------------------------------------
-    // KHỞI TẠO BIỂU ĐỒ RADAR (ĐA CHIỀU CÔNG NGHỆ)
-    // ------------------------------------------------------------
     function initChart() {
       if (chartInstance) return;
       const ctx = document.getElementById("progressChart").getContext("2d");
