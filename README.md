@@ -1,2 +1,2 @@
-# Qu-n-ly-t-ng-n-chi-c-c-ch-n-nu-i-th-y
-Quản ly tổng đàn chi cục chăn nuôi thú y
+# Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN Phòng QLCN
+Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN Phòng QLCN
