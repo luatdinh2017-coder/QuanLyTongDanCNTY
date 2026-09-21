@@ -1,208 +1,493 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Tra Cứu & Quản Lý Dữ Liệu Chăn Nuôi - Thú Y</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theo Dõi & Xuất Báo Cáo 3 Cơ Sở</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS (Thư viện xuất file Excel client-side) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .tab-active {
+      border-color: #4f46e5;
+      color: #4f46e5;
+      background-color: #eef2ff;
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body class="bg-slate-50 text-slate-800 min-h-screen">
 
-    <!-- Thanh tiêu đề hành chính -->
-    <header class="navbar navbar-expand-lg navbar-dark bg-success-subtle-dark py-3 border-bottom border-success">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-                <i class="bi bi-shield-check fs-3 text-warning"></i>
-                <div>
-                    <div class="fw-bold fs-5 text-uppercase">Cơ Sở Dữ Liệu Chăn Nuôi & Thú Y</div>
-                    <small class="text-white-50 d-block" style="font-size: 0.78rem;">Hệ thống thông tin tra cứu & giám sát số liệu trực tuyến</small>
-                </div>
-            </a>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-outline-light btn-sm" id="btnReloadData">
-                    <i class="bi bi-arrow-clockwise me-1"></i> Làm mới dữ liệu
-                </button>
-            </div>
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Hệ Thống Theo Dõi 6 Báo Cáo 3 Cơ Sở</h1>
         </div>
-    </header>
+        <p class="text-xs text-slate-500 mt-0.5">Kỳ Báo Cáo Tháng 9 • Tuần 34 (Hạn chót: 25.8)</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0" 
+           target="_blank" 
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg transition">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+          Google Sheet Gốc
+        </a>
+      </div>
+    </div>
+  </header>
 
-    <main class="container-fluid px-4 py-4">
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- 2 Columns Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- CỘT BÊN TRÁI: BIỂU ĐỒ HOÀN THÀNH & NÚT XUẤT BÁO CÁO (5 Cột) -->
+      <section class="lg:col-span-5 flex flex-col gap-5">
         
-        <!-- Khối cấu hình nguồn dữ liệu Google Sheets -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body p-3 bg-white rounded">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-2 col-12 fw-semibold text-secondary">
-                        <i class="bi bi-file-earmark-spreadsheet me-1 text-success"></i> Nguồn dữ liệu:
-                    </div>
-                    <div class="col-md-8 col-12">
-                        <input type="text" id="sheetUrlInput" class="form-control form-control-sm" 
-                               placeholder="Dán link xuất CSV từ Google Sheets hoặc ID bảng tính...">
-                    </div>
-                    <div class="col-md-2 col-12 d-grid">
-                        <button class="btn btn-success btn-sm" id="btnApplySource">
-                            <i class="bi bi-check2-circle me-1"></i> Tải dữ liệu
-                        </button>
-                    </div>
-                </div>
+        <!-- Khối Thống Kê Tiến Độ Tổng Thể -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
+            <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
+              Đang hoàn thiện
+            </span>
+          </div>
+
+          <div class="mt-3 flex items-baseline justify-between">
+            <div class="flex items-baseline gap-2">
+              <span id="overall-percent" class="text-4xl font-extrabold text-slate-900">0%</span>
+              <span id="overall-fraction" class="text-xs font-medium text-slate-500">0 / 18 hạng mục</span>
             </div>
+            <button onclick="mockCompleteAll()" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
+              Demo: Đạt 100%
+            </button>
+          </div>
+
+          <!-- Thanh Progress Bar -->
+          <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
+            <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
         </div>
 
-        <!-- Thẻ thống kê tổng quan (KPIs) -->
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card shadow-sm border-0 border-start border-4 border-primary h-100">
-                    <div class="card-body">
-                        <div class="text-muted small text-uppercase fw-bold">Tổng số cơ sở</div>
-                        <div class="fs-3 fw-bold text-dark mt-1" id="statTotalFarms">0</div>
-                        <div class="text-muted small mt-1"><i class="bi bi-houses me-1"></i>Hộ & trang trại</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card shadow-sm border-0 border-start border-4 border-success h-100">
-                    <div class="card-body">
-                        <div class="text-muted small text-uppercase fw-bold">Tổng quy mô đàn</div>
-                        <div class="fs-3 fw-bold text-success mt-1" id="statTotalStock">0</div>
-                        <div class="text-muted small mt-1"><i class="bi bi-pie-chart me-1"></i>Con / gia súc, gia cầm</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card shadow-sm border-0 border-start border-4 border-info h-100">
-                    <div class="card-body">
-                        <div class="text-muted small text-uppercase fw-bold">Đạt chuẩn VietGAHP / ATDB</div>
-                        <div class="fs-3 fw-bold text-info mt-1" id="statCertifiedFarms">0</div>
-                        <div class="text-muted small mt-1"><i class="bi bi-patch-check me-1"></i>Cơ sở có chứng nhận</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card shadow-sm border-0 border-start border-4 border-warning h-100">
-                    <div class="card-body">
-                        <div class="text-muted small text-uppercase fw-bold">Tiêm phòng định kỳ</div>
-                        <div class="fs-3 fw-bold text-warning mt-1" id="statVaccinatedFarms">0</div>
-                        <div class="text-muted small mt-1"><i class="bi bi-shield-plus me-1"></i>Đã cập nhật tiêm phòng</div>
-                    </div>
-                </div>
-            </div>
+        <!-- Khối Biểu Đồ Tỉ Lệ Từng Báo Cáo -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-bold text-slate-900">Biểu Đồ Tỉ Lệ Từng Báo Cáo</h2>
+            <span class="text-[11px] text-slate-400">Đơn vị: % Hoàn thành</span>
+          </div>
+
+          <div class="relative h-[260px] w-full">
+            <canvas id="progressChart"></canvas>
+          </div>
         </div>
 
-        <!-- Khu vực Biểu đồ Thống kê -->
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white py-3 border-0">
-                        <h6 class="card-title mb-0 fw-bold text-secondary">
-                            <i class="bi bi-pie-chart-fill me-2 text-success"></i>Cơ cấu tổng đàn theo loại vật nuôi
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <canvas id="chartSpecies"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-6">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-header bg-white py-3 border-0">
-                        <h6 class="card-title mb-0 fw-bold text-secondary">
-                            <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Số lượng cơ sở phân bổ theo địa bàn
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-wrapper">
-                            <canvas id="chartLocation"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- KHỐI XUẤT FILE BÁO CÁO (ĐIỀU KIỆN 100%) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-slate-900">Xuất File Báo Cáo Tổng Hợp</h3>
+            <span id="export-lock-icon" class="text-xs text-amber-600 font-semibold flex items-center gap-1">
+              🔒 Đang khóa
+            </span>
+          </div>
+          <p id="export-status-note" class="text-xs text-slate-500 mb-4 leading-relaxed">
+            Chỉ được phép xuất file khi toàn bộ 6 báo cáo của cả 3 cơ sở đạt tiến độ <b class="text-indigo-600">100%</b>.
+          </p>
+
+          <!-- Nút Xuất Báo Cáo -->
+          <button id="btn-export-excel" 
+                  disabled 
+                  onclick="exportAllReportsToExcel()" 
+                  class="w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-slate-200 text-slate-400 cursor-not-allowed shadow-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span id="btn-export-text">Xuất Báo Cáo 6 Tab (Excel .xlsx)</span>
+          </button>
         </div>
 
-        <!-- Bảng danh sách & Bộ lọc -->
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 border-bottom">
-                <div class="row g-2 align-items-center justify-content-between">
-                    <div class="col-12 col-md-4">
-                        <h6 class="mb-0 fw-bold text-dark">
-                            <i class="bi bi-table me-2 text-secondary"></i>Danh Sách Cơ Sở Dữ Liệu Chi Tiết
-                        </h6>
-                    </div>
-                    <div class="col-12 col-md-8">
-                        <div class="row g-2 justify-content-md-end">
-                            <div class="col-12 col-sm-4">
-                                <select id="filterSpecies" class="form-select form-select-sm">
-                                    <option value="">-- Tất cả loài vật nuôi --</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-sm-4">
-                                <select id="filterLocation" class="form-select form-select-sm">
-                                    <option value="">-- Tất cả địa bàn --</option>
-                                </select>
-                            </div>
-                            <div class="col-12 col-sm-4">
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm tên, mã, chủ hộ...">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </section>
 
-            <!-- Khối bảng dữ liệu -->
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle mb-0" id="dataTable">
-                    <thead class="table-light text-secondary text-uppercase small">
-                        <tr id="tableHeaderRow">
-                            <!-- Header cột sẽ render tự động từ dữ liệu -->
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
-                                Đang nạp dữ liệu từ Google Sheets...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Phân trang -->
-            <div class="card-footer bg-white py-3 border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-                <div class="small text-muted" id="paginationInfo">Hiển thị 0 - 0 của 0 bản ghi</div>
-                <nav>
-                    <ul class="pagination pagination-sm mb-0" id="paginationControls">
-                        <!-- Nút phân trang render từ JS -->
-                    </ul>
-                </nav>
-            </div>
+      <!-- CỘT BÊN PHẢI: 6 TAB BÁO CÁO VÀ CHI TIẾT LINK GOOGLE DRIVE (7 Cột) -->
+      <section class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+        
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-bold text-slate-900">Chi Tiết 6 Tab Báo Cáo</h2>
+          <span class="text-xs text-slate-500">Nhấn tab để xem & chỉnh trạng thái</span>
         </div>
 
-    </main>
-
-    <footer class="footer mt-auto py-3 bg-white border-top text-center text-muted small">
-        <div class="container">
-            <span>Dữ liệu đồng bộ trực tiếp từ Google Sheets &copy; Tra cứu chuyên ngành Chăn nuôi - Thú y</span>
+        <!-- Danh sách 6 Tab Nút Bấm -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border-b border-slate-200 pb-4 mb-5" id="tabsList">
+          <!-- Render tự động 6 tabs -->
         </div>
-    </footer>
 
-    <!-- Thư viện cần thiết -->
-    <!-- PapaParse: Xử lý tệp CSV -->
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <!-- Chart.js: Hiển thị biểu đồ thống kê -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="app.js"></script>
+        <!-- Chi tiết nội dung của Tab đang được chọn -->
+        <div id="tabDetailContainer" class="flex-1 flex flex-col justify-between">
+          <!-- Render chi tiết tab -->
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // Dữ liệu 6 Báo Cáo kèm link Drive/Google Sheet thực tế từ bảng của bạn
+    const reports = [
+      {
+        id: 1,
+        title: "Tổng đàn",
+        type: "Google Sheet",
+        link: "https://docs.google.com/spreadsheets/d/11A3Tw1t7XHsAkqTSk_ga57MLwy6sVeVSdvOqAQC9DDM/edit?usp=sharing",
+        status: { cs1: true, cs2: true, cs3: true }, // true: Xong, false: Chưa nộp
+        notes: "Số liệu tổng đàn gia súc, gia cầm các cơ sở"
+      },
+      {
+        id: 2,
+        title: "Quy Mô Nông hộ",
+        type: "Google Sheet",
+        link: "https://docs.google.com/spreadsheets/d/1TOxrdDciNVWuuq5xCxZZ3byWXwBnDeANWaOn7tBXXbc/edit?usp=sharing",
+        status: { cs1: true, cs2: true, cs3: true },
+        notes: "Thống kê phân loại quy mô nông hộ và trang trại chăn nuôi"
+      },
+      {
+        id: 3,
+        title: "Công Nghệ Cao",
+        type: "Google Sheet",
+        link: "https://docs.google.com/spreadsheets/d/1AI7ocKV14R9H-BkBJJc7B9fLAPXuY2wmTGtiHaW8jIM/edit?usp=sharing",
+        status: { cs1: true, cs2: true, cs3: true },
+        notes: "Báo cáo ứng dụng công nghệ cao trong chăn nuôi"
+      },
+      {
+        id: 4,
+        title: "VietGAHP",
+        type: "Google Sheet",
+        link: "https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0",
+        status: { cs1: true, cs2: true, cs3: true }, // CS2 giữ y cũ coi như hợp lệ
+        notes: "Danh sách cơ sở đạt chuẩn VietGAHP (CS2 giữ nguyên tháng trước)"
+      },
+      {
+        id: 5,
+        title: "CS SX GIỐNG",
+        type: "Google Drive File",
+        link: "https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0",
+        status: { cs1: false, cs2: true, cs3: false },
+        notes: "Danh sách cơ sở sản xuất giống trên địa bàn TP.HCM (CS1 và CS3 chưa gửi)"
+      },
+      {
+        id: 6,
+        title: "DS Chim yến",
+        type: "Excel (.xlsx) trên Drive",
+        link: "https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0",
+        status: { cs1: false, cs2: true, cs3: false },
+        notes: "Số liệu khảo sát & cập nhật nhà yến TP.HCM (CS1 và CS3 chưa gửi)"
+      }
+    ];
+
+    let currentTabIndex = 0;
+    let chartInstance = null;
+
+    // Tính % hoàn thành của 1 báo cáo
+    function getReportPercent(report) {
+      const completed = [report.status.cs1, report.status.cs2, report.status.cs3].filter(Boolean).length;
+      return Math.round((completed / 3) * 100);
+    }
+
+    // Render danh sách 6 Tabs
+    function renderTabs() {
+      const container = document.getElementById("tabsList");
+      container.innerHTML = "";
+
+      reports.forEach((rep, idx) => {
+        const pct = getReportPercent(rep);
+        const isDone = pct === 100;
+        const btn = document.createElement("button");
+        btn.className = `p-2.5 rounded-xl text-left border transition flex flex-col justify-between ${
+          idx === currentTabIndex 
+            ? "tab-active border-indigo-600 shadow-sm" 
+            : "border-slate-200 hover:bg-slate-50 text-slate-700"
+        }`;
+        btn.onclick = () => {
+          currentTabIndex = idx;
+          renderTabs();
+          renderTabDetail();
+        };
+
+        btn.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold truncate">${rep.id}. ${rep.title}</span>
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${
+              isDone ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+            }">${pct}%</span>
+          </div>
+          <span class="text-[10px] text-slate-400 mt-1">${rep.type}</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    // Render nội dung của Tab đang chọn
+    function renderTabDetail() {
+      const rep = reports[currentTabIndex];
+      const pct = getReportPercent(rep);
+      const container = document.getElementById("tabDetailContainer");
+
+      container.innerHTML = `
+        <div class="space-y-4">
+          <!-- Thông tin tiêu đề & Nút link Drive -->
+          <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 text-xs font-bold rounded bg-indigo-100 text-indigo-800">Tab ${rep.id}</span>
+                <h3 class="text-base font-bold text-slate-900">${rep.title}</h3>
+              </div>
+              <p class="text-xs text-slate-500 mt-1">${rep.notes}</p>
+            </div>
+            
+            <!-- Link Google Drive / Sheet -->
+            <a href="${rep.link}" target="_blank" 
+               class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition whitespace-nowrap">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              Mở File Trên Google Drive
+            </a>
+          </div>
+
+          <!-- Theo dõi trạng thái từng cơ sở (Có thể click để đổi trạng thái) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+              Tiến độ 3 Cơ sở (Tick chọn để xác nhận hoàn tất):
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              ${renderCSBox("cs1", "Cơ Sở 1 (CS1)", rep.status.cs1)}
+              ${renderCSBox("cs2", "Cơ Sở 2 (CS2)", rep.status.cs2)}
+              ${renderCSBox("cs3", "Cơ Sở 3 (CS3)", rep.status.cs3)}
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span>* Dữ liệu liên kết trực tiếp với thư mục Google Drive của phòng chuyên môn.</span>
+          <span class="font-semibold text-indigo-600">Đã xong: ${[rep.status.cs1, rep.status.cs2, rep.status.cs3].filter(Boolean).length}/3 CS</span>
+        </div>
+      `;
+    }
+
+    function renderCSBox(key, label, isDone) {
+      return `
+        <div onclick="toggleCSStatus('${key}')" 
+             class="p-3.5 rounded-xl border cursor-pointer select-none transition flex items-center justify-between ${
+               isDone ? "bg-emerald-50 border-emerald-300 text-emerald-900" : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+             }">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" ${isDone ? "checked" : ""} class="w-4 h-4 text-emerald-600 rounded border-slate-300 pointer-events-none" />
+            <span class="text-xs font-semibold">${label}</span>
+          </div>
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded ${
+            isDone ? "bg-emerald-200 text-emerald-800" : "bg-slate-100 text-slate-500"
+          }">${isDone ? "Đã Xong" : "Chưa Nộp"}</span>
+        </div>
+      `;
+    }
+
+    function toggleCSStatus(csKey) {
+      reports[currentTabIndex].status[csKey] = !reports[currentTabIndex].status[csKey];
+      updateAllUI();
+    }
+
+    // Đánh dấu xong toàn bộ để test tính năng xuất file
+    function mockCompleteAll() {
+      reports.forEach(r => {
+        r.status.cs1 = true;
+        r.status.cs2 = true;
+        r.status.cs3 = true;
+      });
+      updateAllUI();
+    }
+
+    // Cập nhật biểu đồ & thanh tiến độ tổng thể
+    function updateProgressMetrics() {
+      let totalItems = reports.length * 3; // 18 items
+      let completedCount = 0;
+
+      reports.forEach(r => {
+        if (r.status.cs1) completedCount++;
+        if (r.status.cs2) completedCount++;
+        if (r.status.cs3) completedCount++;
+      });
+
+      const overallPercent = Math.round((completedCount / totalItems) * 100);
+
+      // Cập nhật số liệu UI
+      document.getElementById("overall-percent").innerText = `${overallPercent}%`;
+      document.getElementById("overall-fraction").innerText = `${completedCount} / ${totalItems} cơ sở`;
+      document.getElementById("overall-progress-bar").style.width = `${overallPercent}%`;
+
+      const pill = document.getElementById("overall-status-pill");
+      const exportBtn = document.getElementById("btn-export-excel");
+      const exportLock = document.getElementById("export-lock-icon");
+      const exportNote = document.getElementById("export-status-note");
+
+      if (overallPercent === 100) {
+        // ĐẠT 100% -> MỞ KHÓA NÚT XUẤT FILE
+        pill.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800";
+        pill.innerText = "✓ Hoàn tất 100%";
+
+        exportLock.className = "text-xs text-emerald-600 font-semibold flex items-center gap-1";
+        exportLock.innerHTML = "🔓 Đã sẵn sàng xuất";
+
+        exportNote.innerHTML = "<span class='text-emerald-700 font-semibold'>✓ Tất cả 6 báo cáo đã hoàn thành 100%. Bạn có thể xuất file Excel tổng hợp ngay bây giờ!</span>";
+
+        exportBtn.disabled = false;
+        exportBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 cursor-pointer animate-bounce";
+      } else {
+        // CHƯA ĐẠT 100% -> KHÓA NÚT XUẤT FILE
+        pill.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800";
+        pill.innerText = "Đang hoàn thiện";
+
+        exportLock.className = "text-xs text-amber-600 font-semibold flex items-center gap-1";
+        exportLock.innerHTML = "🔒 Đang khóa";
+
+        let pendingList = [];
+        reports.forEach(r => {
+          let missingCS = [];
+          if (!r.status.cs1) missingCS.push("CS1");
+          if (!r.status.cs2) missingCS.push("CS2");
+          if (!r.status.cs3) missingCS.push("CS3");
+          if (missingCS.length > 0) {
+            pendingList.push(`${r.title} (${missingCS.join(", ")})`);
+          }
+        });
+
+        exportNote.innerHTML = `Chưa đủ 100% (Hiện tại: <b class="text-indigo-600">${overallPercent}%</b>). Còn thiếu: <span class="text-amber-700 font-medium">${pendingList.slice(0, 2).join("; ")}${pendingList.length > 2 ? "..." : ""}</span>`;
+
+        exportBtn.disabled = true;
+        exportBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-slate-200 text-slate-400 cursor-not-allowed shadow-none";
+      }
+
+      // Cập nhật biểu đồ Chart.js
+      if (chartInstance) {
+        chartInstance.data.datasets[0].data = reports.map(r => getReportPercent(r));
+        chartInstance.data.datasets[0].backgroundColor = reports.map(r => 
+          getReportPercent(r) === 100 ? "#10b981" : "#f59e0b"
+        );
+        chartInstance.update();
+      }
+    }
+
+    // Khởi tạo Chart.js
+    function initChart() {
+      const ctx = document.getElementById("progressChart").getContext("2d");
+      chartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: reports.map(r => r.title),
+          datasets: [{
+            data: reports.map(r => getReportPercent(r)),
+            backgroundColor: reports.map(r => getReportPercent(r) === 100 ? "#10b981" : "#f59e0b"),
+            borderRadius: 6,
+            barThickness: 20
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              beginAtZero: true,
+              max: 100,
+              ticks: { callback: v => v + "%", font: { size: 10 } },
+              grid: { color: "#f8fafc" }
+            },
+            y: {
+              ticks: { font: { size: 11, weight: '600' } },
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: c => ` Tiến độ: ${c.parsed.x}%`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // TÍNH NĂNG XUẤT EXCEL 6 TAB BẰNG SHEETJS
+    function exportAllReportsToExcel() {
+      // Tạo Workbook mới
+      const wb = XLSX.utils.book_new();
+
+      // Sheet 1: Tổng hợp tiến độ
+      const summaryData = [
+        ["BÁO CÁO TỔNG HỢP TIẾN ĐỘ 6 HẠNG MỤC - 3 CƠ SỞ"],
+        ["Kỳ Báo Cáo:", "Tháng 9 (Tuần 34)", "Hạn nộp:", "25/08"],
+        ["Thời gian xuất:", new Date().toLocaleString("vi-VN")],
+        [],
+        ["STT", "Tên Loại Báo Cáo", "CS1", "CS2", "CS3", "Tỉ Lệ Hoàn Thành", "Đường Link File Drive / Sheet"],
+        ...reports.map(r => [
+          r.id,
+          r.title,
+          r.status.cs1 ? "Xong" : "Chưa nộp",
+          r.status.cs2 ? "Xong" : "Chưa nộp",
+          r.status.cs3 ? "Xong" : "Chưa nộp",
+          getReportPercent(r) + "%",
+          r.link
+        ])
+      ];
+
+      const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, wsSummary, "Tong_Hop_Tien_Do");
+
+      // Tạo 6 Sheet con tương ứng với 6 Tab báo cáo
+      reports.forEach(r => {
+        const sheetData = [
+          [`CHI TIẾT: ${r.title.toUpperCase()}`],
+          ["Loại tài liệu:", r.type],
+          ["Liên kết Drive:", r.link],
+          ["Ghi chú:", r.notes],
+          [],
+          ["Cơ Sở", "Trạng Thái Cập Nhật", "Ghi Chú Tiến Độ"],
+          ["Cơ Sở 1 (CS1)", r.status.cs1 ? "Đã nộp" : "Chưa nộp", "Xác nhận kỳ báo cáo"],
+          ["Cơ Sở 2 (CS2)", r.status.cs2 ? "Đã nộp" : "Chưa nộp", "Xác nhận kỳ báo cáo"],
+          ["Cơ Sở 3 (CS3)", r.status.cs3 ? "Đã nộp" : "Chưa nộp", "Xác nhận kỳ báo cáo"]
+        ];
+        const wsTab = XLSX.utils.aoa_to_sheet(sheetData);
+        // Tên sheet trong Excel tối đa 31 ký tự và không chứa ký tự đặc biệt
+        const cleanSheetName = `Tab_${r.id}_${r.title.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 20)}`;
+        XLSX.utils.book_append_sheet(wb, wsTab, cleanSheetName);
+      });
+
+      // Xuất file và kích hoạt tải về máy
+      XLSX.writeFile(wb, "Bao_Cao_Tong_Hop_6_Tab_3CS.xlsx");
+    }
+
+    function updateAllUI() {
+      renderTabs();
+      renderTabDetail();
+      updateProgressMetrics();
+    }
+
+    // Chạy khi khởi động trang
+    window.addEventListener("DOMContentLoaded", () => {
+      initChart();
+      updateAllUI();
+    });
+  </script>
 </body>
 </html>
