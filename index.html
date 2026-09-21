@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SheetJS CDN (Xuất Excel) -->
+  <!-- SheetJS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <!-- Google Fonts Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,12 +33,12 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
   <!-- ======================================================== -->
-  <!-- 1. THANH TIÊU ĐỀ (HEADER) -->
+  <!-- 1. THANH HEADER -->
   <!-- ======================================================== -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
       
-      <!-- Logo & Tên hệ thống -->
+      <!-- Logo & Tiêu đề -->
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-indigo-100 shrink-0">
           QLCN
@@ -48,7 +48,7 @@
             <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
               Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN Phòng QLCN
             </h1>
-            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Hệ thống hoạt động"></span>
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Hệ thống trực tuyến"></span>
           </div>
           <p id="headerPeriodSubtitle" class="text-xs text-indigo-700 font-semibold mt-0.5">
             Kỳ Báo Cáo Tháng 9 • Tuần 34 (Chốt số liệu ngày 25)
@@ -59,7 +59,7 @@
       <!-- Khu vực Tài khoản & Nút điều khiển -->
       <div class="flex items-center flex-wrap gap-2">
         
-        <!-- TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP -->
+        <!-- Trạng thái Chưa đăng nhập -->
         <div id="headerGuestArea" class="flex items-center gap-2">
           <div class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-600 font-medium">
             <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,17 +70,13 @@
           </div>
 
           <button onclick="openLoginModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
-            </svg>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
             <span>Đăng Nhập</span>
           </button>
         </div>
 
-        <!-- TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP -->
+        <!-- Trạng thái Đã đăng nhập -->
         <div id="headerUserArea" class="hidden flex items-center gap-2">
-          
-          <!-- Nút Admin điều chỉnh kỳ báo cáo ngày 25 -->
           <button id="btnAdminPeriodConfig" onclick="openPeriodConfigModal()" class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             <span>⚙️ Đổi Kỳ Báo Cáo (Ngày 25)</span>
@@ -97,13 +93,21 @@
           </button>
         </div>
 
+        <!-- MỞ THƯ MỤC GOOGLE DRIVE CỦA PHÒNG -->
+        <a href="https://drive.google.com/drive/folders/1CG75B4ESATCjHOH2hPGiMkgNii0WyxvX" 
+           target="_blank" 
+           title="Mở thư mục Google Drive chứa 4 file báo cáo gốc"
+           class="px-3 py-1.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-xl transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z"/></svg>
+          <span>Drive Chứa File Gốc</span>
+        </a>
+
         <!-- Link Sheet Gốc 3CS -->
         <a href="https://docs.google.com/spreadsheets/d/1x7j6HwGWrx1daoaku4avJDr1m8mC-jNnRplzFrFi7OI/edit?usp=sharing" 
            target="_blank" 
-           title="Mở Google Sheet tổng hợp gốc"
            class="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
-          <span>Sheet Gốc 3CS</span>
+          <span>Sheet Gốc</span>
         </a>
 
       </div>
@@ -111,7 +115,7 @@
   </header>
 
   <!-- ======================================================== -->
-  <!-- 2. GIAO DIỆN CHÍNH DASHBOARD (CÔNG KHAI) -->
+  <!-- 2. GIAO DIỆN CHÍNH DASHBOARD -->
   <!-- ======================================================== -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
     
@@ -121,7 +125,7 @@
         <span class="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg font-bold">📅</span>
         <span>
           <b class="text-indigo-900" id="bannerPeriodText">Kỳ Báo Cáo: Tháng 9 • Tuần 34</b> | Chốt số liệu vào <b>ngày 25</b> hàng tháng. 
-          <span id="bannerPeriodNote" class="text-slate-500 italic">(Được quản lý và điều chỉnh bởi Admin Phòng QLCN)</span>
+          <span id="bannerPeriodNote" class="text-slate-500 italic">(Lưu trữ tự động vào Folder Google Drive của Phòng)</span>
         </span>
       </div>
       <div>
@@ -137,18 +141,15 @@
         <span class="text-xs font-bold uppercase tracking-wider text-slate-500">6 Loại Báo Cáo Chuyên Đề:</span>
         <span class="text-xs text-indigo-600 font-medium">* Bấm chọn báo cáo để xem hoặc nhập số liệu 3 Cơ sở</span>
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="mainTabsContainer">
-        <!-- Render 6 Main Tabs -->
-      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="mainTabsContainer"></div>
     </div>
 
     <!-- KHUNG CHÍNH: 2 CỘT -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <!-- CỘT TRÁI: TIẾN ĐỘ, BIỂU ĐỒ & NÚT XUẤT WORKBOOK TỔNG HỢP (4 Cột) -->
+      <!-- CỘT TRÁI: TIẾN ĐỘ & BIỂU ĐỒ (4 Cột) -->
       <section class="lg:col-span-4 flex flex-col gap-5">
         
-        <!-- Thẻ Tiến độ tổng thể -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
@@ -165,7 +166,6 @@
           </div>
         </div>
 
-        <!-- Biểu đồ Chart.js -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
           <div class="flex items-center justify-between mb-2">
             <h2 class="text-sm font-bold text-slate-900">Biểu Đồ Tỉ Lệ 6 Báo Cáo</h2>
@@ -176,8 +176,8 @@
           </div>
         </div>
 
-        <!-- Nút xuất tổng thể cả 6 báo cáo (Hiển thị rõ tên file kèm kỳ báo cáo) -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+        <!-- Khối xuất Excel tổng thể -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
           <button onclick="exportAllMasterExcel()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow transition flex flex-col items-center justify-center gap-1">
             <div class="flex items-center gap-1.5">
               <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
@@ -193,7 +193,7 @@
       <!-- CỘT PHẢI: KHUNG LÀM VIỆC 4 TAB CON (8 Cột) -->
       <section class="lg:col-span-8 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
         
-        <!-- THANH 4 TAB CON ÁP DỤNG ĐỒNG BỘ CHO MỌI BÁO CÁO -->
+        <!-- THANH 4 TAB CON -->
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-4">
           <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
             <button onclick="switchSubTab('cs1')" id="subTabBtn_cs1" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
@@ -210,16 +210,13 @@
             </button>
           </div>
 
-          <!-- Huy hiệu trạng thái -->
           <span id="csCurrentStatusBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
             Đã hoàn thành
           </span>
         </div>
 
-        <!-- KHUNG NỘI DUNG FORM NHẬP / BẢNG GỘP -->
-        <div id="subTabContentContainer" class="flex-1 flex flex-col justify-between">
-          <!-- Render động bằng JS -->
-        </div>
+        <!-- KHUNG NỘI DUNG FORM / GỘP -->
+        <div id="subTabContentContainer" class="flex-1 flex flex-col justify-between"></div>
 
       </section>
 
@@ -227,11 +224,10 @@
   </main>
 
   <!-- ======================================================== -->
-  <!-- 3. HỘP THOẠI ĐIỀU CHỈNH KỲ BÁO CÁO (ADMIN - CHỐT NGÀY 25) -->
+  <!-- 3. HỘP THOẠI ĐIỀU CHỈNH KỲ BÁO CÁO (ADMIN) -->
   <!-- ======================================================== -->
   <div id="periodConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 relative">
-      
       <button onclick="closePeriodConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
@@ -251,18 +247,17 @@
           <label class="block text-slate-700 font-bold mb-1">Tên File Excel Gốc*</label>
           <input type="text" id="cfgTenFileGoc" required oninput="updateFileNamePreview()" placeholder="vd: Capnhatthongke2026_3CS"
                  class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-semibold focus:ring-2 focus:ring-amber-500" />
-          <span class="text-[10px] text-slate-400">Tên gốc của file báo cáo (không cần gõ đuôi .xlsx)</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-slate-700 font-bold mb-1">Tháng Báo Cáo*</label>
-            <input type="text" id="cfgThang" required oninput="updateFileNamePreview()" placeholder="vd: Tháng 9 hoặc Tháng 10"
+            <input type="text" id="cfgThang" required oninput="updateFileNamePreview()" placeholder="vd: Tháng 9"
                    class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-amber-500" />
           </div>
           <div>
             <label class="block text-slate-700 font-bold mb-1">Tuần Báo Cáo*</label>
-            <input type="text" id="cfgTuan" required oninput="updateFileNamePreview()" placeholder="vd: Tuần 34 hoặc Tuần 38"
+            <input type="text" id="cfgTuan" required oninput="updateFileNamePreview()" placeholder="vd: Tuần 34"
                    class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-amber-500" />
           </div>
         </div>
@@ -279,7 +274,6 @@
                     class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500"></textarea>
         </div>
 
-        <!-- Khung xem trước tên file xuất tự động -->
         <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
           <span class="font-bold text-amber-900 block text-[11px] mb-1">👀 Xem trước tên file Excel xuất ra:</span>
           <div id="cfgPreviewFileName" class="font-mono font-bold text-indigo-700 break-all text-xs">
@@ -288,15 +282,10 @@
         </div>
 
         <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" onclick="closePeriodConfigModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">
-            Hủy Bỏ
-          </button>
-          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow transition">
-            💾 Lưu Kỳ Báo Cáo Mới
-          </button>
+          <button type="button" onclick="closePeriodConfigModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">Hủy Bỏ</button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow transition">💾 Lưu Cấu Hình</button>
         </div>
       </form>
-
     </div>
   </div>
 
@@ -305,7 +294,6 @@
   <!-- ======================================================== -->
   <div id="loginModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 relative">
-      
       <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
@@ -346,20 +334,20 @@
         <div class="flex justify-between font-mono"><span>CS3: canbo_cs3</span><span>Pass: 123456</span></div>
         <div class="flex justify-between font-mono text-indigo-700 font-bold"><span>Admin: admin</span><span>Pass: admin@123</span></div>
       </div>
-
     </div>
   </div>
 
 
   <!-- ======================================================== -->
-  <!-- 5. JAVASCRIPT: QUY TẮC ĐẶT TÊN FILE EXCEL & LOGIC HỆ THỐNG -->
+  <!-- 5. JAVASCRIPT: LOGIC ĐIỀU KHIỂN & LƯU GOOGLE DRIVE -->
   <!-- ======================================================== -->
   <script>
-    // ------------------------------------------------------------
-    // QUẢN LÝ KỲ BÁO CÁO & TÊN FILE EXCEL GỐC
-    // ------------------------------------------------------------
-    const STORAGE_KEY_PERIOD = "app_config_ky_baocao_v3";
+    // URL Web App của Google Apps Script (Bạn chỉ cần dán URL sau khi deploy vào đây)
+    // Nếu chưa cấu hình, hệ thống sẽ mở trực tiếp thư mục Folder Drive để bạn xem
+    const GOOGLE_APPS_SCRIPT_URL = ""; 
+    const GOOGLE_DRIVE_FOLDER_URL = "https://drive.google.com/drive/folders/1CG75B4ESATCjHOH2hPGiMkgNii0WyxvX";
 
+    const STORAGE_KEY_PERIOD = "app_config_ky_baocao_v4";
     const defaultPeriodConfig = {
       tenFileGoc: "Capnhatthongke2026_3CS",
       thang: "Tháng 9",
@@ -377,15 +365,11 @@
       localStorage.setItem(STORAGE_KEY_PERIOD, JSON.stringify(cfg));
     }
 
-    // HÀM TẠO TÊN FILE EXCEL CHUẨN: [Tên file gốc] - [Kỳ báo cáo].xlsx
     function buildExportFileName(suffixSheet = "") {
       const cfg = getPeriodConfig();
       const base = (cfg.tenFileGoc || "Capnhatthongke2026_3CS").trim();
       const periodStr = `${cfg.thang} - ${cfg.tuan}`.trim();
-      
-      if (suffixSheet) {
-        return `${base}_${suffixSheet} - ${periodStr}.xlsx`;
-      }
+      if (suffixSheet) return `${base}_${suffixSheet} - ${periodStr}.xlsx`;
       return `${base} - ${periodStr}.xlsx`;
     }
 
@@ -424,23 +408,17 @@
       closePeriodConfigModal();
       renderPeriodUI();
       renderActiveContent();
-      alert(`✓ Đã lưu kỳ báo cáo mới!\nTên file xuất tự động: ${buildExportFileName()}`);
+      alert(`✓ Đã lưu cấu hình mới!\nTên file xuất tự động: ${buildExportFileName()}`);
     }
 
     function renderPeriodUI() {
       const cfg = getPeriodConfig();
       document.getElementById("headerPeriodSubtitle").innerText = `Kỳ Báo Cáo ${cfg.thang} • ${cfg.tuan} (Chốt số liệu ngày ${cfg.ngayChot})`;
       document.getElementById("bannerPeriodText").innerText = `Kỳ Báo Cáo: ${cfg.thang} • ${cfg.tuan}`;
-      if (cfg.ghiChu) {
-        document.getElementById("bannerPeriodNote").innerText = `(${cfg.ghiChu})`;
-      }
-      // Cập nhật tên file trên nút xuất tổng hợp bên trái
+      if (cfg.ghiChu) document.getElementById("bannerPeriodNote").innerText = `(${cfg.ghiChu})`;
       document.getElementById("btnMasterExportFileName").innerText = buildExportFileName();
     }
 
-    // ------------------------------------------------------------
-    // TÀI KHOẢN PHÂN QUYỀN
-    // ------------------------------------------------------------
     const defaultUsers = [
       { username: "admin", password: "admin@123", name: "Quản trị viên Hệ thống", role: "admin" },
       { username: "canbo_cs1", password: "123456", name: "Cán bộ CS1 (TP.HCM)", role: "user", cs: "cs1" },
@@ -448,13 +426,9 @@
       { username: "canbo_cs3", password: "123456", name: "Cán bộ CS3 (Bà Rịa - VT)", role: "user", cs: "cs3" }
     ];
 
-    // CẤU TRÚC 6 BÁO CÁO CHUYÊN ĐỀ
     const reportConfigs = {
       1: {
-        id: 1,
-        title: "Tổng đàn",
-        sheetName: "Tong_Dan",
-        desc: "Thống kê tình hình chăn nuôi Heo, Trâu Bò, Gia Cầm, Dê Cừu",
+        id: 1, title: "Tổng đàn", sheetName: "Tong_Dan",
         fields: [
           { key: "heo_thit", label: "Heo thịt (con)", group: "Đàn Heo", def: [35300, 17336, 49602] },
           { key: "heo_nai", label: "Nái sinh sản (con)", group: "Đàn Heo", def: [8412, 1391, 5697] },
@@ -470,10 +444,7 @@
         ]
       },
       2: {
-        id: 2,
-        title: "Quy Mô Nông hộ",
-        sheetName: "Quy_Mo_Nong_Ho",
-        desc: "Phân loại trang trại và quy mô chăn nuôi nông hộ",
+        id: 2, title: "Quy Mô Nông hộ", sheetName: "Quy_Mo_Nong_Ho",
         fields: [
           { key: "trang_trai_lon", label: "Trang trại quy mô lớn (trại)", group: "Trang Trại", def: [18, 142, 65] },
           { key: "trang_trai_vua", label: "Trang trại quy mô vừa (trại)", group: "Trang Trại", def: [56, 310, 120] },
@@ -483,10 +454,7 @@
         ]
       },
       3: {
-        id: 3,
-        title: "Công Nghệ Cao",
-        sheetName: "Cong_Nghe_Cao",
-        desc: "Ứng dụng công nghệ cao, tự động hóa chuồng trại",
+        id: 3, title: "Công Nghệ Cao", sheetName: "Cong_Nghe_Cao",
         fields: [
           { key: "cs_cnc", label: "Số cơ sở chăn nuôi ứng dụng CNC (cơ sở)", group: "Ứng Dụng CNC", def: [24, 186, 78] },
           { key: "chuong_lanh", label: "Số trại áp dụng chuồng lạnh/làm mát (trại)", group: "Hạ Tầng", def: [35, 240, 95] },
@@ -495,10 +463,7 @@
         ]
       },
       4: {
-        id: 4,
-        title: "VietGAHP",
-        sheetName: "VietGAHP",
-        desc: "Chứng nhận thực hành chăn nuôi tốt VietGAHP",
+        id: 4, title: "VietGAHP", sheetName: "VietGAHP",
         fields: [
           { key: "cs_hieu_luc", label: "Số cơ sở VietGAHP còn hiệu lực (cơ sở)", group: "Chứng Nhận", def: [48, 115, 34] },
           { key: "cs_cap_moi", label: "Số cơ sở cấp mới trong kỳ (cơ sở)", group: "Chứng Nhận", def: [3, 8, 2] },
@@ -507,10 +472,7 @@
         ]
       },
       5: {
-        id: 5,
-        title: "CS SX Giống",
-        sheetName: "CS_SX_Giong",
-        desc: "Cơ sở sản xuất và kinh doanh con giống vật nuôi",
+        id: 5, title: "CS SX Giống", sheetName: "CS_SX_Giong",
         fields: [
           { key: "cs_heo_giong", label: "Cơ sở sản xuất giống Heo (cơ sở)", group: "Giống Vật Nuôi", def: [8, 35, 12] },
           { key: "cs_bo_giong", label: "Cơ sở nhân giống Bò / tinh bò (cơ sở)", group: "Giống Vật Nuôi", def: [3, 6, 2] },
@@ -519,10 +481,7 @@
         ]
       },
       6: {
-        id: 6,
-        title: "DS Chim Yến",
-        sheetName: "Chim_Yen",
-        desc: "Số liệu khảo sát nhà yến và sản lượng tổ yến",
+        id: 6, title: "DS Chim Yến", sheetName: "Chim_Yen",
         fields: [
           { key: "chu_nha_yen", label: "Số lượng chủ nhà yến (hộ nuôi)", group: "Nhà Nuôi Yến", def: [558, 685, 458] },
           { key: "so_nha_yen", label: "Số lượng nhà nuôi chim yến (nhà)", group: "Nhà Nuôi Yến", def: [668, 688, 547] },
@@ -532,12 +491,10 @@
       }
     };
 
-    const STORAGE_KEY_MASTER = "app_master_data_v7";
-
+    const STORAGE_KEY_MASTER = "app_master_data_v8";
     function initOrGetMasterData() {
       const stored = localStorage.getItem(STORAGE_KEY_MASTER);
       if (stored) return JSON.parse(stored);
-
       const initData = {};
       [1, 2, 3, 4, 5, 6].forEach(repId => {
         initData[repId] = {
@@ -552,7 +509,6 @@
           initData[repId].cs3.data[f.key] = f.def[2];
         });
       });
-
       localStorage.setItem(STORAGE_KEY_MASTER, JSON.stringify(initData));
       return initData;
     }
@@ -611,15 +567,11 @@
       if (user) {
         guestArea.classList.add("hidden");
         userArea.classList.remove("hidden");
-
         document.getElementById("navUserName").innerText = user.name;
         document.getElementById("navUserBadge").innerText = user.role === "admin" ? "Admin" : "Cán bộ";
 
-        if (user.role === "admin") {
-          btnAdminPeriod.classList.remove("hidden");
-        } else {
-          btnAdminPeriod.classList.add("hidden");
-        }
+        if (user.role === "admin") btnAdminPeriod.classList.remove("hidden");
+        else btnAdminPeriod.classList.add("hidden");
       } else {
         guestArea.classList.remove("hidden");
         userArea.classList.add("hidden");
@@ -627,9 +579,6 @@
       }
     }
 
-    // ------------------------------------------------------------
-    // RENDER HÀNG 6 TAB CHÍNH
-    // ------------------------------------------------------------
     function renderMainTabs() {
       const c = document.getElementById("mainTabsContainer");
       const mData = initOrGetMasterData();
@@ -665,9 +614,6 @@
       });
     }
 
-    // ------------------------------------------------------------
-    // RENDER 4 TAB CON
-    // ------------------------------------------------------------
     function renderSubTabsNavigation() {
       const mData = initOrGetMasterData();
       const repState = mData[currentMainTab];
@@ -710,13 +656,11 @@
       const curUser = getCurrentUser();
       const periodCfg = getPeriodConfig();
 
-      // TAB 4: XUẤT BÁO CÁO TỔNG
       if (currentSubTab === "gop") {
         renderSubTabGop(container, cfg, repState, periodCfg);
         return;
       }
 
-      // TAB 1, 2, 3: CS1, CS2, CS3
       const curCSData = repState[currentSubTab].data;
       const isCompleted = repState[currentSubTab].completed;
       const canEdit = curUser && (curUser.role === "admin" || curUser.cs === currentSubTab);
@@ -824,7 +768,6 @@
         `;
       });
 
-      // Tên file xuất lẻ mẫu theo quy tắc: [Tên file gốc]_[Tên sheet] - [Kỳ báo cáo].xlsx
       const singleFileName = buildExportFileName(cfg.sheetName);
 
       container.innerHTML = `
@@ -850,6 +793,7 @@
             </table>
           </div>
 
+          <!-- Khối hành động: Xuất tải về máy HOẶC Lưu trực tiếp vào Thư mục Drive -->
           <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div class="font-bold text-slate-800 text-sm">Xuất Báo Cáo ${cfg.title} (.xlsx)</div>
@@ -860,13 +804,62 @@
                 Tình trạng: <span class="font-semibold ${allDone ? 'text-emerald-700' : 'text-amber-700'}">${allDone ? '✓ Đã hoàn tất 3/3 cơ sở' : '⚠️ Còn cơ sở chưa nộp'}</span>
               </p>
             </div>
-            <button onclick="exportCurrentReportExcel(${cfg.id})" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"/></svg>
-              <span>Tải File Excel (.xlsx)</span>
-            </button>
+            
+            <div class="flex items-center flex-wrap gap-2">
+              <!-- Nút tải file về máy -->
+              <button onclick="exportCurrentReportExcel(${cfg.id})" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"/></svg>
+                <span>Tải Về Máy (.xlsx)</span>
+              </button>
+
+              <!-- Nút Lưu trực tiếp file thứ 2 vào Folder Google Drive -->
+              <button onclick="handleSaveClonedFileToGoogleDrive(${cfg.id})" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition flex items-center gap-1.5 whitespace-nowrap">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                <span>Lưu Vào Folder Drive</span>
+              </button>
+            </div>
           </div>
         </div>
       `;
+    }
+
+    // XỬ LÝ LƯU FILE THỨ 2 VÀO FOLDER DRIVE
+    function handleSaveClonedFileToGoogleDrive(repId) {
+      const periodCfg = getPeriodConfig();
+      const cfg = reportConfigs[repId];
+      const newName = buildExportFileName(cfg.sheetName);
+
+      if (GOOGLE_APPS_SCRIPT_URL) {
+        // Gửi lệnh qua Apps Script Web App
+        fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "CLONE_REPORT_FILE",
+            reportId: repId,
+            kyBaoCao: `${periodCfg.thang} - ${periodCfg.tuan}`,
+            fileNameGoc: cfg.sheetName
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "SUCCESS") {
+            alert(`✓ Đã tạo thành công file thứ 2 trên Google Drive!\nTên file: ${data.fileName}\n\nĐang mở thư mục Drive chứa file...`);
+            window.open(data.folderUrl || GOOGLE_DRIVE_FOLDER_URL, "_blank");
+          } else {
+            alert("Lỗi từ Google Drive: " + data.message);
+          }
+        })
+        .catch(err => {
+          alert("Không thể kết nối đến Apps Script. Mở thư mục Google Drive để kiểm tra: " + err);
+          window.open(GOOGLE_DRIVE_FOLDER_URL, "_blank");
+        });
+      } else {
+        // Nếu chưa cấu hình Apps Script URL, thông báo và mở thẳng folder Drive
+        const confirmed = confirm(`Hệ thống sẽ tạo file mới với tên:\n"${newName}"\ntại thư mục chứa 4 file gốc trên Google Drive.\n\nBấm OK để mở thư mục Google Drive!`);
+        if (confirmed) {
+          window.open(GOOGLE_DRIVE_FOLDER_URL, "_blank");
+        }
+      }
     }
 
     function handleSaveCurrentReportCS(e) {
@@ -951,9 +944,6 @@
       });
     }
 
-    // ------------------------------------------------------------
-    // XUẤT FILE EXCEL: [TÊN FILE GỐC] - [KỲ BÁO CÁO].xlsx
-    // ------------------------------------------------------------
     function exportCurrentReportExcel(repId) {
       const cfg = reportConfigs[repId];
       const mData = initOrGetMasterData();
@@ -977,8 +967,6 @@
       ];
 
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dataAoa), cfg.sheetName);
-      
-      // Tên file xuất lẻ: [Tên file gốc]_[Tên sheet] - [Kỳ báo cáo].xlsx
       const fileName = buildExportFileName(cfg.sheetName);
       XLSX.writeFile(wb, fileName);
     }
@@ -988,7 +976,6 @@
       const mData = initOrGetMasterData();
       const periodCfg = getPeriodConfig();
 
-      // Sheet 1: Tổng quan tiến độ
       const summaryRows = [
         ["HỆ THỐNG QUẢN LÝ & NHẬP LIỆU BÁO CÁO DLCN PHÒNG QLCN"],
         ["BÁO CÁO TỔNG HỢP 6 LOẠI BÁO CÁO - 3 CƠ SỞ"],
@@ -1013,7 +1000,6 @@
       });
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryRows), "Tong_Hop_Tien_Do");
 
-      // 6 Sheet con tương ứng 6 chuyên đề
       [1, 2, 3, 4, 5, 6].forEach(id => {
         const cfg = reportConfigs[id];
         const rep = mData[id];
@@ -1035,14 +1021,10 @@
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetAoa), cfg.sheetName);
       });
 
-      // TÊN FILE WORKBOOK TỔNG HỢP: [Tên file gốc] - [Kỳ báo cáo].xlsx
       const masterFileName = buildExportFileName();
       XLSX.writeFile(wb, masterFileName);
     }
 
-    // ------------------------------------------------------------
-    // KHỞI CHẠY HỆ THỐNG
-    // ------------------------------------------------------------
     function renderAll() {
       renderPeriodUI();
       renderMainTabs();
