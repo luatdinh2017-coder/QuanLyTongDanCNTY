@@ -1,0 +1,63 @@
+/* Tùy biến giao diện phong cách hành chính, trang nhã */
+:root {
+    --primary-color: #1b5e20;
+    --accent-color: #2e7d32;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #2c3e50;
+    background-color: #f4f6f9 !important;
+}
+
+.bg-success-subtle-dark {
+    background-color: #1b4332 !important;
+    color: #ffffff;
+}
+
+.card {
+    border-radius: 8px;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 260px;
+    width: 100%;
+}
+
+.table thead th {
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.table tbody td {
+    font-size: 0.88rem;
+    vertical-align: middle;
+}
+
+.badge-status-yes {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.badge-status-no {
+    background-color: #f8d7da;
+    color: #842029;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.pagination .page-link {
+    color: #198754;
+}
