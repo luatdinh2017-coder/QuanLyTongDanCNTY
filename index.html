@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Tra Cứu & Quản Lý Dữ Liệu Chăn Nuôi - Thú Y</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-light">
+
+    <!-- Thanh tiêu đề hành chính -->
+    <header class="navbar navbar-expand-lg navbar-dark bg-success-subtle-dark py-3 border-bottom border-success">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                <i class="bi bi-shield-check fs-3 text-warning"></i>
+                <div>
+                    <div class="fw-bold fs-5 text-uppercase">Cơ Sở Dữ Liệu Chăn Nuôi & Thú Y</div>
+                    <small class="text-white-50 d-block" style="font-size: 0.78rem;">Hệ thống thông tin tra cứu & giám sát số liệu trực tuyến</small>
+                </div>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-outline-light btn-sm" id="btnReloadData">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Làm mới dữ liệu
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container-fluid px-4 py-4">
+        
+        <!-- Khối cấu hình nguồn dữ liệu Google Sheets -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-3 bg-white rounded">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-2 col-12 fw-semibold text-secondary">
+                        <i class="bi bi-file-earmark-spreadsheet me-1 text-success"></i> Nguồn dữ liệu:
+                    </div>
+                    <div class="col-md-8 col-12">
+                        <input type="text" id="sheetUrlInput" class="form-control form-control-sm" 
+                               placeholder="Dán link xuất CSV từ Google Sheets hoặc ID bảng tính...">
+                    </div>
+                    <div class="col-md-2 col-12 d-grid">
+                        <button class="btn btn-success btn-sm" id="btnApplySource">
+                            <i class="bi bi-check2-circle me-1"></i> Tải dữ liệu
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thẻ thống kê tổng quan (KPIs) -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 border-start border-4 border-primary h-100">
+                    <div class="card-body">
+                        <div class="text-muted small text-uppercase fw-bold">Tổng số cơ sở</div>
+                        <div class="fs-3 fw-bold text-dark mt-1" id="statTotalFarms">0</div>
+                        <div class="text-muted small mt-1"><i class="bi bi-houses me-1"></i>Hộ & trang trại</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 border-start border-4 border-success h-100">
+                    <div class="card-body">
+                        <div class="text-muted small text-uppercase fw-bold">Tổng quy mô đàn</div>
+                        <div class="fs-3 fw-bold text-success mt-1" id="statTotalStock">0</div>
+                        <div class="text-muted small mt-1"><i class="bi bi-pie-chart me-1"></i>Con / gia súc, gia cầm</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 border-start border-4 border-info h-100">
+                    <div class="card-body">
+                        <div class="text-muted small text-uppercase fw-bold">Đạt chuẩn VietGAHP / ATDB</div>
+                        <div class="fs-3 fw-bold text-info mt-1" id="statCertifiedFarms">0</div>
+                        <div class="text-muted small mt-1"><i class="bi bi-patch-check me-1"></i>Cơ sở có chứng nhận</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="card shadow-sm border-0 border-start border-4 border-warning h-100">
+                    <div class="card-body">
+                        <div class="text-muted small text-uppercase fw-bold">Tiêm phòng định kỳ</div>
+                        <div class="fs-3 fw-bold text-warning mt-1" id="statVaccinatedFarms">0</div>
+                        <div class="text-muted small mt-1"><i class="bi bi-shield-plus me-1"></i>Đã cập nhật tiêm phòng</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khu vực Biểu đồ Thống kê -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3 border-0">
+                        <h6 class="card-title mb-0 fw-bold text-secondary">
+                            <i class="bi bi-pie-chart-fill me-2 text-success"></i>Cơ cấu tổng đàn theo loại vật nuôi
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <canvas id="chartSpecies"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white py-3 border-0">
+                        <h6 class="card-title mb-0 fw-bold text-secondary">
+                            <i class="bi bi-bar-chart-fill me-2 text-primary"></i>Số lượng cơ sở phân bổ theo địa bàn
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-wrapper">
+                            <canvas id="chartLocation"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách & Bộ lọc -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="row g-2 align-items-center justify-content-between">
+                    <div class="col-12 col-md-4">
+                        <h6 class="mb-0 fw-bold text-dark">
+                            <i class="bi bi-table me-2 text-secondary"></i>Danh Sách Cơ Sở Dữ Liệu Chi Tiết
+                        </h6>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <div class="row g-2 justify-content-md-end">
+                            <div class="col-12 col-sm-4">
+                                <select id="filterSpecies" class="form-select form-select-sm">
+                                    <option value="">-- Tất cả loài vật nuôi --</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <select id="filterLocation" class="form-select form-select-sm">
+                                    <option value="">-- Tất cả địa bàn --</option>
+                                </select>
+                            </div>
+                            <div class="col-12 col-sm-4">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm tên, mã, chủ hộ...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối bảng dữ liệu -->
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0" id="dataTable">
+                    <thead class="table-light text-secondary text-uppercase small">
+                        <tr id="tableHeaderRow">
+                            <!-- Header cột sẽ render tự động từ dữ liệu -->
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+                                Đang nạp dữ liệu từ Google Sheets...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang -->
+            <div class="card-footer bg-white py-3 border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+                <div class="small text-muted" id="paginationInfo">Hiển thị 0 - 0 của 0 bản ghi</div>
+                <nav>
+                    <ul class="pagination pagination-sm mb-0" id="paginationControls">
+                        <!-- Nút phân trang render từ JS -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-white border-top text-center text-muted small">
+        <div class="container">
+            <span>Dữ liệu đồng bộ trực tiếp từ Google Sheets &copy; Tra cứu chuyên ngành Chăn nuôi - Thú y</span>
+        </div>
+    </footer>
+
+    <!-- Thư viện cần thiết -->
+    <!-- PapaParse: Xử lý tệp CSV -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <!-- Chart.js: Hiển thị biểu đồ thống kê -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
