@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Theo Dõi & Xuất Báo Cáo 3 Cơ Sở</title>
+  <title>Hệ Thống Báo Cáo 3 Cơ Sở - Xác Thực & Quản Lý</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SheetJS (Thư viện xuất file Excel client-side) -->
+  <!-- SheetJS CDN (Xuất Excel) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,131 +25,494 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">Hệ Thống Theo Dõi 6 Báo Cáo 3 Cơ Sở</h1>
+  <!-- ======================================================== -->
+  <!-- 1. GIAO DIỆN ĐĂNG NHẬP (Hiển thị khi chưa đăng nhập) -->
+  <!-- ======================================================== -->
+  <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 sm:p-8">
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
         </div>
-        <p class="text-xs text-slate-500 mt-0.5">Kỳ Báo Cáo Tháng 9 • Tuần 34 (Hạn chót: 25.8)</p>
+        <h2 class="text-2xl font-extrabold text-slate-900">Đăng Nhập Hệ Thống</h2>
+        <p class="text-xs text-slate-500 mt-1">Hệ thống theo dõi & xuất báo cáo 6 chỉ tiêu 3 cơ sở</p>
       </div>
-      <div class="flex items-center gap-2">
-        <a href="https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0" 
-           target="_blank" 
-           class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg transition">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
-          Google Sheet Gốc
-        </a>
+
+      <!-- Thông báo lỗi đăng nhập -->
+      <div id="loginErrorMsg" class="hidden mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+        <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        <span id="loginErrorText">Tài khoản hoặc mật khẩu không chính xác!</span>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Tên đăng nhập</label>
+          <input type="text" id="loginUsername" required placeholder="Nhập username (vd: admin)"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mật khẩu</label>
+          <input type="password" id="loginPassword" required placeholder="Nhập mật khẩu"
+                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+        </div>
+
+        <button type="submit"
+                class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm shadow-md transition shadow-indigo-100 flex items-center justify-center gap-2">
+          <span>Vào Hệ Thống</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+      <!-- Gợi ý tài khoản demo -->
+      <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-500 bg-slate-50 p-3 rounded-xl">
+        <p class="font-bold text-slate-700 mb-1">🔑 Tài khoản có sẵn trong hệ thống:</p>
+        <div class="flex justify-between items-center py-0.5">
+          <span>Quản trị (Admin):</span>
+          <span class="font-mono font-semibold text-indigo-700 bg-white px-1.5 py-0.5 rounded border border-slate-200">admin / admin@123</span>
+        </div>
+        <div class="flex justify-between items-center py-0.5">
+          <span>Cán bộ theo dõi:</span>
+          <span class="font-mono font-semibold text-slate-700 bg-white px-1.5 py-0.5 rounded border border-slate-200">canbo_cs1 / 123456</span>
+        </div>
       </div>
     </div>
-  </header>
+  </div>
 
-  <!-- Main Container -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- 2 Columns Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <!-- ======================================================== -->
+  <!-- 2. GIAO DIỆN CHÍNH (Sau khi đã đăng nhập thành công) -->
+  <!-- ======================================================== -->
+  <div id="mainDashboard" class="hidden">
 
-      <!-- CỘT BÊN TRÁI: BIỂU ĐỒ HOÀN THÀNH & NÚT XUẤT BÁO CÁO (5 Cột) -->
-      <section class="lg:col-span-5 flex flex-col gap-5">
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         
-        <!-- Khối Thống Kê Tiến Độ Tổng Thể -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
-            <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
-              Đang hoàn thiện
-            </span>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow">
+            3CS
           </div>
-
-          <div class="mt-3 flex items-baseline justify-between">
-            <div class="flex items-baseline gap-2">
-              <span id="overall-percent" class="text-4xl font-extrabold text-slate-900">0%</span>
-              <span id="overall-fraction" class="text-xs font-medium text-slate-500">0 / 18 hạng mục</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Theo Dõi 6 Báo Cáo 3 Cơ Sở</h1>
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Trực tuyến"></span>
             </div>
-            <button onclick="mockCompleteAll()" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
-              Demo: Đạt 100%
-            </button>
-          </div>
-
-          <!-- Thanh Progress Bar -->
-          <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
-            <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            <p class="text-xs text-slate-500">Kỳ Báo Cáo Tháng 9 • Tuần 34</p>
           </div>
         </div>
 
-        <!-- Khối Biểu Đồ Tỉ Lệ Từng Báo Cáo -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
-          <div class="flex items-center justify-between mb-3">
-            <h2 class="text-sm font-bold text-slate-900">Biểu Đồ Tỉ Lệ Từng Báo Cáo</h2>
-            <span class="text-[11px] text-slate-400">Đơn vị: % Hoàn thành</span>
+        <!-- Khu vực hiển thị thông tin User & Menu Admin -->
+        <div class="flex items-center flex-wrap gap-2.5">
+          <!-- Thông tin User -->
+          <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs">
+            <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+            <span class="text-slate-500">Xin chào:</span>
+            <span id="navUserName" class="font-bold text-slate-800">Admin</span>
+            <span id="navUserBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-800">Admin</span>
           </div>
 
-          <div class="relative h-[260px] w-full">
-            <canvas id="progressChart"></canvas>
-          </div>
-        </div>
+          <!-- Nút Quản trị User (CHỈ ADMIN THẤY) -->
+          <button id="btnOpenAdminModal" onclick="openAdminModal()" 
+                  class="hidden inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            Quản Lý Tài Khoản
+          </button>
 
-        <!-- KHỐI XUẤT FILE BÁO CÁO (ĐIỀU KIỆN 100%) -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-sm font-bold text-slate-900">Xuất File Báo Cáo Tổng Hợp</h3>
-            <span id="export-lock-icon" class="text-xs text-amber-600 font-semibold flex items-center gap-1">
-              🔒 Đang khóa
-            </span>
-          </div>
-          <p id="export-status-note" class="text-xs text-slate-500 mb-4 leading-relaxed">
-            Chỉ được phép xuất file khi toàn bộ 6 báo cáo của cả 3 cơ sở đạt tiến độ <b class="text-indigo-600">100%</b>.
-          </p>
+          <!-- Link Google Sheet gốc -->
+          <a href="https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0" 
+             target="_blank" 
+             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+            Sheet Gốc
+          </a>
 
-          <!-- Nút Xuất Báo Cáo -->
-          <button id="btn-export-excel" 
-                  disabled 
-                  onclick="exportAllReportsToExcel()" 
-                  class="w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-slate-200 text-slate-400 cursor-not-allowed shadow-none">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"/>
-            </svg>
-            <span id="btn-export-text">Xuất Báo Cáo 6 Tab (Excel .xlsx)</span>
+          <!-- Nút Đăng xuất -->
+          <button onclick="handleLogout()" 
+                  class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            Đăng xuất
           </button>
         </div>
 
-      </section>
+      </div>
+    </header>
 
-      <!-- CỘT BÊN PHẢI: 6 TAB BÁO CÁO VÀ CHI TIẾT LINK GOOGLE DRIVE (7 Cột) -->
-      <section class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-        
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-base font-bold text-slate-900">Chi Tiết 6 Tab Báo Cáo</h2>
-          <span class="text-xs text-slate-500">Nhấn tab để xem & chỉnh trạng thái</span>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- CỘT BÊN TRÁI: TIẾN ĐỘ, BIỂU ĐỒ & NÚT XUẤT (5 Cột) -->
+        <section class="lg:col-span-5 flex flex-col gap-5">
+          
+          <!-- Thẻ Tiến độ tổng thể -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
+              <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
+                Đang hoàn thiện
+              </span>
+            </div>
+
+            <div class="mt-3 flex items-baseline justify-between">
+              <div class="flex items-baseline gap-2">
+                <span id="overall-percent" class="text-4xl font-black text-slate-900">0%</span>
+                <span id="overall-fraction" class="text-xs font-semibold text-slate-400">0 / 18 cơ sở</span>
+              </div>
+              <button onclick="mockCompleteAll()" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
+                Demo Đạt 100%
+              </button>
+            </div>
+
+            <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
+              <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Biểu đồ hoàn thành từng báo cáo -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-sm font-bold text-slate-900">Biểu Đồ Hoàn Thành 6 Báo Cáo</h2>
+              <span class="text-[11px] text-slate-400">Đơn vị: %</span>
+            </div>
+
+            <div class="relative h-[250px] w-full">
+              <canvas id="progressChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Khối Xuất Báo Cáo (Chỉ mở khi đạt 100%) -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-slate-900">Xuất Báo Cáo Tổng Hợp</h3>
+              <span id="export-lock-icon" class="text-xs text-amber-600 font-semibold flex items-center gap-1">
+                🔒 Đang khóa
+              </span>
+            </div>
+            <p id="export-status-note" class="text-xs text-slate-500 mb-4 leading-relaxed">
+              Cần đạt đủ <b class="text-indigo-600">100%</b> cả 6 báo cáo (3 cơ sở) để kích hoạt tải file Excel.
+            </p>
+
+            <button id="btn-export-excel" 
+                    disabled 
+                    onclick="exportAllReportsToExcel()" 
+                    class="w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-slate-200 text-slate-400 cursor-not-allowed shadow-none">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"/>
+              </svg>
+              <span>Xuất Báo Cáo 6 Tab (Excel .xlsx)</span>
+            </button>
+          </div>
+
+        </section>
+
+        <!-- CỘT BÊN PHẢI: 6 TAB BÁO CÁO & LINK GOOGLE DRIVE (7 Cột) -->
+        <section class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+          
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-base font-bold text-slate-900">Chi Tiết 6 Tab Báo Cáo</h2>
+            <span class="text-xs text-slate-400">Chọn từng tab để xem liên kết Drive</span>
+          </div>
+
+          <!-- Danh sách nút 6 Tabs -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border-b border-slate-200 pb-4 mb-5" id="tabsList"></div>
+
+          <!-- Nội dung chi tiết Tab đang chọn -->
+          <div id="tabDetailContainer" class="flex-1 flex flex-col justify-between"></div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- 3. MODAL QUẢN LÝ TÀI KHOẢN (DÀNH RIÊNG CHO ADMIN) -->
+  <!-- ======================================================== -->
+  <div id="adminModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-lg bg-indigo-100 text-indigo-700">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-slate-900">Quản Trị Người Dùng & Phân Quyền</h3>
+            <p class="text-xs text-slate-500">Thêm mới, quản lý danh sách tài khoản được truy cập hệ thống</p>
+          </div>
+        </div>
+        <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Modal Body (Cuộn được) -->
+      <div class="p-6 overflow-y-auto space-y-6">
+
+        <!-- Form Thêm User Mới -->
+        <div class="p-4 rounded-xl bg-indigo-50/50 border border-indigo-100">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-900 mb-3">➕ Thêm Tài Khoản Mới</h4>
+          
+          <form id="addUserForm" onsubmit="handleAddNewUser(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Tên đăng nhập (Username)*</label>
+              <input type="text" id="newUsername" required placeholder="vd: canbo_cs2"
+                     class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Mật khẩu (Password)*</label>
+              <input type="text" id="newPassword" required placeholder="Nhập mật khẩu"
+                     class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Họ và Tên hiển thị*</label>
+              <input type="text" id="newFullName" required placeholder="vd: Nguyễn Văn A (CS2)"
+                     class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500" />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">Phân quyền</label>
+              <select id="newRole" class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500">
+                <option value="user">Cán bộ theo dõi (User)</option>
+                <option value="admin">Quản trị viên (Admin)</option>
+              </select>
+            </div>
+
+            <div class="sm:col-span-2 flex justify-end mt-1">
+              <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-sm transition">
+                + Lưu Tài Khoản Mới
+              </button>
+            </div>
+          </form>
         </div>
 
-        <!-- Danh sách 6 Tab Nút Bấm -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 border-b border-slate-200 pb-4 mb-5" id="tabsList">
-          <!-- Render tự động 6 tabs -->
+        <!-- Bảng Danh Sách Tài Khoản Đang Có -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">📋 Danh Sách Tài Khoản Trong Hệ Thống</h4>
+            <span id="userCountText" class="text-xs text-slate-400">Đang có 2 tài khoản</span>
+          </div>
+
+          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="p-2.5">Tên đăng nhập</th>
+                  <th class="p-2.5">Họ & Tên</th>
+                  <th class="p-2.5">Mật khẩu</th>
+                  <th class="p-2.5">Vai trò</th>
+                  <th class="p-2.5 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody" class="divide-y divide-slate-100 bg-white">
+                <!-- Render tự động -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Chi tiết nội dung của Tab đang được chọn -->
-        <div id="tabDetailContainer" class="flex-1 flex flex-col justify-between">
-          <!-- Render chi tiết tab -->
-        </div>
+      </div>
 
-      </section>
+      <!-- Modal Footer -->
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-between items-center text-xs text-slate-500">
+        <span>* Dữ liệu được lưu trực tiếp vào LocalStorage của trình duyệt này.</span>
+        <button onclick="closeAdminModal()" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg transition">
+          Đóng
+        </button>
+      </div>
 
     </div>
-  </main>
+  </div>
 
+
+  <!-- ======================================================== -->
+  <!-- JAVASCRIPT: LOGIC XÁC THỰC, ADMIN & BÁO CÁO -->
+  <!-- ======================================================== -->
   <script>
-    // Dữ liệu 6 Báo Cáo kèm link Drive/Google Sheet thực tế từ bảng của bạn
+    // ------------------------------------------------------------
+    // 1. QUẢN LÝ USER QUA LOCALSTORAGE (ADMIN THÊM / XÓA)
+    // ------------------------------------------------------------
+    const STORAGE_USERS_KEY = "app_registered_users";
+    const SESSION_AUTH_KEY = "app_logged_in_user";
+
+    // Danh sách mặc định ban đầu nếu chưa từng lưu
+    const defaultUsers = [
+      { username: "admin", password: "admin@123", name: "Quản trị viên Hệ thống", role: "admin" },
+      { username: "canbo_cs1", password: "123456", name: "Cán bộ Phụ trách CS1", role: "user" }
+    ];
+
+    function getUsersList() {
+      const stored = localStorage.getItem(STORAGE_USERS_KEY);
+      if (!stored) {
+        localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(defaultUsers));
+        return defaultUsers;
+      }
+      return JSON.parse(stored);
+    }
+
+    function saveUsersList(users) {
+      localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+    }
+
+    function getCurrentSession() {
+      const data = sessionStorage.getItem(SESSION_AUTH_KEY);
+      return data ? JSON.parse(data) : null;
+    }
+
+    // ------------------------------------------------------------
+    // 2. XỬ LÝ ĐĂNG NHẬP & ĐĂNG XUẤT
+    // ------------------------------------------------------------
+    function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById("loginUsername").value.trim();
+      const p = document.getElementById("loginPassword").value;
+      const errBox = document.getElementById("loginErrorMsg");
+
+      const users = getUsersList();
+      const matchedUser = users.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
+
+      if (matchedUser) {
+        errBox.classList.add("hidden");
+        // Lưu phiên đăng nhập
+        sessionStorage.setItem(SESSION_AUTH_KEY, JSON.stringify(matchedUser));
+        initAppAfterLogin(matchedUser);
+      } else {
+        errBox.classList.remove("hidden");
+        document.getElementById("loginErrorText").innerText = "Tên đăng nhập hoặc mật khẩu không chính xác!";
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem(SESSION_AUTH_KEY);
+      document.getElementById("mainDashboard").classList.add("hidden");
+      document.getElementById("loginScreen").classList.remove("hidden");
+      document.getElementById("loginForm").reset();
+    }
+
+    function initAppAfterLogin(user) {
+      // Ẩn login, hiện dashboard
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("mainDashboard").classList.remove("hidden");
+
+      // Cập nhật thông tin User trên thanh header
+      document.getElementById("navUserName").innerText = user.name || user.username;
+      const badge = document.getElementById("navUserBadge");
+      badge.innerText = user.role === "admin" ? "Admin" : "Cán bộ";
+      badge.className = user.role === "admin" 
+        ? "px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-800"
+        : "px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800";
+
+      // Nút Quản trị chỉ hiển thị khi là ADMIN
+      const btnAdmin = document.getElementById("btnOpenAdminModal");
+      if (user.role === "admin") {
+        btnAdmin.classList.remove("hidden");
+      } else {
+        btnAdmin.classList.add("hidden");
+      }
+
+      // Khởi tạo Dashboard và Biểu đồ
+      initChart();
+      updateAllUI();
+    }
+
+    // ------------------------------------------------------------
+    // 3. CÁC THAO TÁC CỦA ADMIN: THÊM USER, XÓA USER
+    // ------------------------------------------------------------
+    function openAdminModal() {
+      const user = getCurrentSession();
+      if (!user || user.role !== "admin") {
+        alert("Chỉ tài khoản Admin mới có quyền vào khu vực này!");
+        return;
+      }
+      renderUserTable();
+      document.getElementById("adminModal").classList.remove("hidden");
+    }
+
+    function closeAdminModal() {
+      document.getElementById("adminModal").classList.add("hidden");
+    }
+
+    function renderUserTable() {
+      const users = getUsersList();
+      const tbody = document.getElementById("userTableBody");
+      document.getElementById("userCountText").innerText = `Đang có ${users.length} tài khoản`;
+      tbody.innerHTML = "";
+
+      users.forEach((u, idx) => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50 transition";
+        const isCurrentAdmin = (u.username === "admin");
+
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold text-slate-800 font-mono">${u.username}</td>
+          <td class="p-2.5 text-slate-600">${u.name}</td>
+          <td class="p-2.5 font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded">${u.password}</td>
+          <td class="p-2.5">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+              u.role === 'admin' ? 'bg-indigo-100 text-indigo-800' : 'bg-slate-100 text-slate-600'
+            }">${u.role === 'admin' ? 'Quản Trị' : 'Cán Bộ'}</span>
+          </td>
+          <td class="p-2.5 text-right">
+            ${
+              isCurrentAdmin 
+                ? '<span class="text-slate-300 text-[11px] italic">Mặc định</span>'
+                : `<button onclick="deleteUser('${u.username}')" class="text-rose-600 hover:text-rose-800 font-bold text-[11px] hover:underline">Xóa</button>`
+            }
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleAddNewUser(e) {
+      e.preventDefault();
+      const u = document.getElementById("newUsername").value.trim();
+      const p = document.getElementById("newPassword").value.trim();
+      const name = document.getElementById("newFullName").value.trim();
+      const role = document.getElementById("newRole").value;
+
+      if (!u || !p || !name) return;
+
+      const users = getUsersList();
+      if (users.some(x => x.username.toLowerCase() === u.toLowerCase())) {
+        alert("⚠️ Tên đăng nhập này đã tồn tại! Vui lòng chọn tên khác.");
+        return;
+      }
+
+      users.push({ username: u, password: p, name: name, role: role });
+      saveUsersList(users);
+
+      alert(`✓ Đã tạo thành công tài khoản: ${u}`);
+      document.getElementById("addUserForm").reset();
+      renderUserTable();
+    }
+
+    function deleteUser(username) {
+      if (confirm(`Bạn có chắc chắn muốn xóa tài khoản "${username}" không?`)) {
+        let users = getUsersList();
+        users = users.filter(x => x.username !== username);
+        saveUsersList(users);
+        renderUserTable();
+      }
+    }
+
+    // ------------------------------------------------------------
+    // 4. DỮ LIỆU BÁO CÁO & BIỂU ĐỒ (DASHBOARD)
+    // ------------------------------------------------------------
     const reports = [
       {
         id: 1,
         title: "Tổng đàn",
         type: "Google Sheet",
         link: "https://docs.google.com/spreadsheets/d/11A3Tw1t7XHsAkqTSk_ga57MLwy6sVeVSdvOqAQC9DDM/edit?usp=sharing",
-        status: { cs1: true, cs2: true, cs3: true }, // true: Xong, false: Chưa nộp
+        status: { cs1: true, cs2: true, cs3: true },
         notes: "Số liệu tổng đàn gia súc, gia cầm các cơ sở"
       },
       {
@@ -158,7 +521,7 @@
         type: "Google Sheet",
         link: "https://docs.google.com/spreadsheets/d/1TOxrdDciNVWuuq5xCxZZ3byWXwBnDeANWaOn7tBXXbc/edit?usp=sharing",
         status: { cs1: true, cs2: true, cs3: true },
-        notes: "Thống kê phân loại quy mô nông hộ và trang trại chăn nuôi"
+        notes: "Thống kê quy mô nông hộ và trang trại chăn nuôi"
       },
       {
         id: 3,
@@ -173,7 +536,7 @@
         title: "VietGAHP",
         type: "Google Sheet",
         link: "https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0",
-        status: { cs1: true, cs2: true, cs3: true }, // CS2 giữ y cũ coi như hợp lệ
+        status: { cs1: true, cs2: true, cs3: true },
         notes: "Danh sách cơ sở đạt chuẩn VietGAHP (CS2 giữ nguyên tháng trước)"
       },
       {
@@ -182,7 +545,7 @@
         type: "Google Drive File",
         link: "https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0",
         status: { cs1: false, cs2: true, cs3: false },
-        notes: "Danh sách cơ sở sản xuất giống trên địa bàn TP.HCM (CS1 và CS3 chưa gửi)"
+        notes: "Danh sách cơ sở sản xuất giống trên địa bàn TP.HCM"
       },
       {
         id: 6,
@@ -190,20 +553,18 @@
         type: "Excel (.xlsx) trên Drive",
         link: "https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0",
         status: { cs1: false, cs2: true, cs3: false },
-        notes: "Số liệu khảo sát & cập nhật nhà yến TP.HCM (CS1 và CS3 chưa gửi)"
+        notes: "Số liệu khảo sát & cập nhật nhà yến TP.HCM"
       }
     ];
 
     let currentTabIndex = 0;
     let chartInstance = null;
 
-    // Tính % hoàn thành của 1 báo cáo
     function getReportPercent(report) {
       const completed = [report.status.cs1, report.status.cs2, report.status.cs3].filter(Boolean).length;
       return Math.round((completed / 3) * 100);
     }
 
-    // Render danh sách 6 Tabs
     function renderTabs() {
       const container = document.getElementById("tabsList");
       container.innerHTML = "";
@@ -236,15 +597,12 @@
       });
     }
 
-    // Render nội dung của Tab đang chọn
     function renderTabDetail() {
       const rep = reports[currentTabIndex];
-      const pct = getReportPercent(rep);
       const container = document.getElementById("tabDetailContainer");
 
       container.innerHTML = `
         <div class="space-y-4">
-          <!-- Thông tin tiêu đề & Nút link Drive -->
           <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div class="flex items-center gap-2">
@@ -254,20 +612,18 @@
               <p class="text-xs text-slate-500 mt-1">${rep.notes}</p>
             </div>
             
-            <!-- Link Google Drive / Sheet -->
             <a href="${rep.link}" target="_blank" 
                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm transition whitespace-nowrap">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
               </svg>
-              Mở File Trên Google Drive
+              Mở File Trên Drive
             </a>
           </div>
 
-          <!-- Theo dõi trạng thái từng cơ sở (Có thể click để đổi trạng thái) -->
           <div>
             <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-              Tiến độ 3 Cơ sở (Tick chọn để xác nhận hoàn tất):
+              Tiến độ 3 Cơ sở (Tick chọn để xác nhận):
             </label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               ${renderCSBox("cs1", "Cơ Sở 1 (CS1)", rep.status.cs1)}
@@ -278,7 +634,7 @@
         </div>
 
         <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-          <span>* Dữ liệu liên kết trực tiếp với thư mục Google Drive của phòng chuyên môn.</span>
+          <span>* Dữ liệu liên kết Drive của các bộ phận chuyên môn.</span>
           <span class="font-semibold text-indigo-600">Đã xong: ${[rep.status.cs1, rep.status.cs2, rep.status.cs3].filter(Boolean).length}/3 CS</span>
         </div>
       `;
@@ -306,7 +662,6 @@
       updateAllUI();
     }
 
-    // Đánh dấu xong toàn bộ để test tính năng xuất file
     function mockCompleteAll() {
       reports.forEach(r => {
         r.status.cs1 = true;
@@ -316,9 +671,8 @@
       updateAllUI();
     }
 
-    // Cập nhật biểu đồ & thanh tiến độ tổng thể
     function updateProgressMetrics() {
-      let totalItems = reports.length * 3; // 18 items
+      let totalItems = reports.length * 3;
       let completedCount = 0;
 
       reports.forEach(r => {
@@ -329,7 +683,6 @@
 
       const overallPercent = Math.round((completedCount / totalItems) * 100);
 
-      // Cập nhật số liệu UI
       document.getElementById("overall-percent").innerText = `${overallPercent}%`;
       document.getElementById("overall-fraction").innerText = `${completedCount} / ${totalItems} cơ sở`;
       document.getElementById("overall-progress-bar").style.width = `${overallPercent}%`;
@@ -340,43 +693,29 @@
       const exportNote = document.getElementById("export-status-note");
 
       if (overallPercent === 100) {
-        // ĐẠT 100% -> MỞ KHÓA NÚT XUẤT FILE
         pill.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800";
         pill.innerText = "✓ Hoàn tất 100%";
 
         exportLock.className = "text-xs text-emerald-600 font-semibold flex items-center gap-1";
-        exportLock.innerHTML = "🔓 Đã sẵn sàng xuất";
+        exportLock.innerHTML = "🔓 Sẵn sàng xuất";
 
-        exportNote.innerHTML = "<span class='text-emerald-700 font-semibold'>✓ Tất cả 6 báo cáo đã hoàn thành 100%. Bạn có thể xuất file Excel tổng hợp ngay bây giờ!</span>";
+        exportNote.innerHTML = "<span class='text-emerald-700 font-semibold'>✓ Cả 6 báo cáo đã đạt 100%. Bạn có thể xuất file Excel tổng hợp ngay!</span>";
 
         exportBtn.disabled = false;
         exportBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200 cursor-pointer animate-bounce";
       } else {
-        // CHƯA ĐẠT 100% -> KHÓA NÚT XUẤT FILE
         pill.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800";
         pill.innerText = "Đang hoàn thiện";
 
         exportLock.className = "text-xs text-amber-600 font-semibold flex items-center gap-1";
         exportLock.innerHTML = "🔒 Đang khóa";
 
-        let pendingList = [];
-        reports.forEach(r => {
-          let missingCS = [];
-          if (!r.status.cs1) missingCS.push("CS1");
-          if (!r.status.cs2) missingCS.push("CS2");
-          if (!r.status.cs3) missingCS.push("CS3");
-          if (missingCS.length > 0) {
-            pendingList.push(`${r.title} (${missingCS.join(", ")})`);
-          }
-        });
-
-        exportNote.innerHTML = `Chưa đủ 100% (Hiện tại: <b class="text-indigo-600">${overallPercent}%</b>). Còn thiếu: <span class="text-amber-700 font-medium">${pendingList.slice(0, 2).join("; ")}${pendingList.length > 2 ? "..." : ""}</span>`;
+        exportNote.innerHTML = `Chưa đủ 100% (Hiện tại: <b class="text-indigo-600">${overallPercent}%</b>). Vui lòng hoàn thành đủ 3 cơ sở ở 6 tab.`;
 
         exportBtn.disabled = true;
         exportBtn.className = "w-full py-3 px-4 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition duration-200 bg-slate-200 text-slate-400 cursor-not-allowed shadow-none";
       }
 
-      // Cập nhật biểu đồ Chart.js
       if (chartInstance) {
         chartInstance.data.datasets[0].data = reports.map(r => getReportPercent(r));
         chartInstance.data.datasets[0].backgroundColor = reports.map(r => 
@@ -386,8 +725,8 @@
       }
     }
 
-    // Khởi tạo Chart.js
     function initChart() {
+      if (chartInstance) return;
       const ctx = document.getElementById("progressChart").getContext("2d");
       chartInstance = new Chart(ctx, {
         type: "bar",
@@ -412,7 +751,7 @@
               grid: { color: "#f8fafc" }
             },
             y: {
-              ticks: { font: { size: 11, weight: '600' } },
+              ticks: { font: { size: 11, weight: "600" } },
               grid: { display: false }
             }
           },
@@ -428,18 +767,14 @@
       });
     }
 
-    // TÍNH NĂNG XUẤT EXCEL 6 TAB BẰNG SHEETJS
     function exportAllReportsToExcel() {
-      // Tạo Workbook mới
       const wb = XLSX.utils.book_new();
 
-      // Sheet 1: Tổng hợp tiến độ
       const summaryData = [
         ["BÁO CÁO TỔNG HỢP TIẾN ĐỘ 6 HẠNG MỤC - 3 CƠ SỞ"],
-        ["Kỳ Báo Cáo:", "Tháng 9 (Tuần 34)", "Hạn nộp:", "25/08"],
         ["Thời gian xuất:", new Date().toLocaleString("vi-VN")],
         [],
-        ["STT", "Tên Loại Báo Cáo", "CS1", "CS2", "CS3", "Tỉ Lệ Hoàn Thành", "Đường Link File Drive / Sheet"],
+        ["STT", "Tên Loại Báo Cáo", "CS1", "CS2", "CS3", "Tỉ Lệ Hoàn Thành", "Link Google Drive / Sheet"],
         ...reports.map(r => [
           r.id,
           r.title,
@@ -454,7 +789,6 @@
       const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
       XLSX.utils.book_append_sheet(wb, wsSummary, "Tong_Hop_Tien_Do");
 
-      // Tạo 6 Sheet con tương ứng với 6 Tab báo cáo
       reports.forEach(r => {
         const sheetData = [
           [`CHI TIẾT: ${r.title.toUpperCase()}`],
@@ -462,18 +796,16 @@
           ["Liên kết Drive:", r.link],
           ["Ghi chú:", r.notes],
           [],
-          ["Cơ Sở", "Trạng Thái Cập Nhật", "Ghi Chú Tiến Độ"],
-          ["Cơ Sở 1 (CS1)", r.status.cs1 ? "Đã nộp" : "Chưa nộp", "Xác nhận kỳ báo cáo"],
-          ["Cơ Sở 2 (CS2)", r.status.cs2 ? "Đã nộp" : "Chưa nộp", "Xác nhận kỳ báo cáo"],
-          ["Cơ Sở 3 (CS3)", r.status.cs3 ? "Đã nộp" : "Chưa nộp", "Xác nhận kỳ báo cáo"]
+          ["Cơ Sở", "Trạng Thái Cập Nhật"],
+          ["Cơ Sở 1 (CS1)", r.status.cs1 ? "Đã nộp" : "Chưa nộp"],
+          ["Cơ Sở 2 (CS2)", r.status.cs2 ? "Đã nộp" : "Chưa nộp"],
+          ["Cơ Sở 3 (CS3)", r.status.cs3 ? "Đã nộp" : "Chưa nộp"]
         ];
         const wsTab = XLSX.utils.aoa_to_sheet(sheetData);
-        // Tên sheet trong Excel tối đa 31 ký tự và không chứa ký tự đặc biệt
         const cleanSheetName = `Tab_${r.id}_${r.title.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 20)}`;
         XLSX.utils.book_append_sheet(wb, wsTab, cleanSheetName);
       });
 
-      // Xuất file và kích hoạt tải về máy
       XLSX.writeFile(wb, "Bao_Cao_Tong_Hop_6_Tab_3CS.xlsx");
     }
 
@@ -483,10 +815,18 @@
       updateProgressMetrics();
     }
 
-    // Chạy khi khởi động trang
+    // ------------------------------------------------------------
+    // 5. KHỞI CHẠY HỆ THỐNG KHI TẢI TRANG
+    // ------------------------------------------------------------
     window.addEventListener("DOMContentLoaded", () => {
-      initChart();
-      updateAllUI();
+      // Kiểm tra nếu đã có tài khoản đang trong phiên làm việc
+      const activeUser = getCurrentSession();
+      if (activeUser) {
+        initAppAfterLogin(activeUser);
+      } else {
+        document.getElementById("loginScreen").classList.remove("hidden");
+        document.getElementById("mainDashboard").classList.add("hidden");
+      }
     });
   </script>
 </body>
