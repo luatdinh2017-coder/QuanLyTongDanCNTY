@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hệ Thống Quản Lý Báo cáo tháng số liệu QLCN</title>
+  <title>Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN Phòng QLCN</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- SheetJS CDN (Xuất Excel đa sheet) -->
+  <!-- SheetJS CDN (Xuất Excel) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <!-- Google Fonts Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,202 +17,429 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     .main-tab-active {
-      border-color: #4f46e5;
-      color: #4f46e5;
-      background-color: #eef2ff;
-      box-shadow: 0 1px 3px 0 rgba(79, 70, 229, 0.1);
+      border-color: #4f46e5 !important;
+      color: #4f46e5 !important;
+      background-color: #eef2ff !important;
+      box-shadow: 0 1px 3px 0 rgba(79, 70, 229, 0.15);
     }
     .sub-tab-active {
       background-color: #4f46e5 !important;
       color: #ffffff !important;
       font-weight: 700;
-      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
     }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
   <!-- ======================================================== -->
-  <!-- 1. MÀN HÌNH ĐĂNG NHẬP PHÂN QUYỀN -->
+  <!-- 1. THANH TIÊU ĐỀ (HEADER) -->
   <!-- ======================================================== -->
-  <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 sm:p-8">
-      <div class="text-center mb-6">
-        <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-indigo-200 font-black text-lg">
-          3CS
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      
+      <!-- Logo & Tên hệ thống -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-md shadow-indigo-100 shrink-0">
+          QLCN
         </div>
-        <h2 class="text-2xl font-extrabold text-slate-900">Đăng Nhập Hệ Thống</h2>
-        <p class="text-xs text-slate-500 mt-1">Cổng nhập liệu & quản lý 6 loại báo cáo 3 cơ sở</p>
-      </div>
-
-      <div id="loginErrorMsg" class="hidden mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-        Tài khoản hoặc mật khẩu không chính xác!
-      </div>
-
-      <form onsubmit="handleLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Tên đăng nhập</label>
-          <input type="text" id="loginUsername" required placeholder="admin / canbo_cs1 / canbo_cs2 / canbo_cs3"
-                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          <div class="flex items-center gap-2">
+            <h1 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
+              Hệ Thống Quản Lý & Nhập Liệu Báo Cáo DLCN Phòng QLCN
+            </h1>
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Hệ thống hoạt động"></span>
+          </div>
+          <p id="headerPeriodSubtitle" class="text-xs text-indigo-700 font-semibold mt-0.5">
+            Kỳ Báo Cáo Tháng 9 • Tuần 34 (Chốt số liệu ngày 25)
+          </p>
         </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mật khẩu</label>
-          <input type="password" id="loginPassword" required placeholder="Nhập mật khẩu"
-                 class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-        </div>
-
-        <button type="submit"
-                class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
-          <span>Vào Hệ Thống</span>
-        </button>
-      </form>
-
-      <div class="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-500 bg-slate-50 p-3 rounded-xl space-y-1">
-        <p class="font-bold text-slate-700 mb-1">🔑 Tài khoản phân quyền có sẵn:</p>
-        <div class="flex justify-between"><span>Admin (Toàn quyền):</span><span class="font-mono font-semibold text-indigo-700">admin / admin@123</span></div>
-        <div class="flex justify-between"><span>Cán bộ CS1 (TP.HCM):</span><span class="font-mono font-semibold text-slate-700">canbo_cs1 / 123456</span></div>
-        <div class="flex justify-between"><span>Cán bộ CS2 (Bình Dương):</span><span class="font-mono font-semibold text-slate-700">canbo_cs2 / 123456</span></div>
-        <div class="flex justify-between"><span>Cán bộ CS3 (Bà Rịa - VT):</span><span class="font-mono font-semibold text-slate-700">canbo_cs3 / 123456</span></div>
       </div>
-    </div>
-  </div>
 
-  <!-- ======================================================== -->
-  <!-- 2. GIAO DIỆN CHÍNH DASHBOARD -->
-  <!-- ======================================================== -->
-  <div id="mainDashboard" class="hidden">
-    
-    <!-- Top Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-base shadow">
-            3CS
+      <!-- Khu vực Tài khoản & Nút điều khiển -->
+      <div class="flex items-center flex-wrap gap-2">
+        
+        <!-- TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP -->
+        <div id="headerGuestArea" class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-600 font-medium">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <span>Chế độ: <b>Chỉ xem</b></span>
           </div>
-          <div>
-            <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">Hệ Thống Nhập Liệu & Tổng Hợp 6 Báo Cáo</h1>
-            <p class="text-xs text-slate-500">Kỳ Báo Cáo Tháng 9 • Tuần 34 (Hạn chót: 25.8)</p>
-          </div>
+
+          <button onclick="openLoginModal()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+            </svg>
+            <span>Đăng Nhập</span>
+          </button>
         </div>
 
-        <div class="flex items-center flex-wrap gap-2.5">
+        <!-- TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP -->
+        <div id="headerUserArea" class="hidden flex items-center gap-2">
+          
+          <!-- Nút Admin điều chỉnh kỳ báo cáo ngày 25 -->
+          <button id="btnAdminPeriodConfig" onclick="openPeriodConfigModal()" class="hidden px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span>⚙️ Đổi Kỳ Báo Cáo (Ngày 25)</span>
+          </button>
+
           <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl border border-slate-200 text-xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
             <span id="navUserName" class="font-bold text-slate-800">Admin</span>
             <span id="navUserBadge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-800">Admin</span>
           </div>
-
-          <a href="https://docs.google.com/spreadsheets/d/1cywOmAHY1EegKTSqdkdjOkjmRKcozaUPa2JdHNm34HY/edit?pli=1&gid=0#gid=0" 
-             target="_blank" class="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition">
-            Sheet Gốc 3CS
-          </a>
 
           <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-xl transition">
             Đăng xuất
           </button>
         </div>
+
+        <!-- Link Sheet Gốc 3CS -->
+        <a href="https://docs.google.com/spreadsheets/d/1x7j6HwGWrx1daoaku4avJDr1m8mC-jNnRplzFrFi7OI/edit?usp=sharing" 
+           target="_blank" 
+           title="Mở Google Sheet tổng hợp gốc"
+           class="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-xl transition flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+          <span>Sheet Gốc 3CS</span>
+        </a>
+
       </div>
-    </header>
+    </div>
+  </header>
 
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      
-      <!-- BẬC 1: HÀNG 6 TAB BÁO CÁO CHÍNH -->
-      <div class="mb-6">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">6 Loại Báo Cáo Định Kỳ:</span>
-          <span class="text-xs text-indigo-600 font-semibold">* Chọn báo cáo để nhập số liệu hoặc xuất báo cáo tổng</span>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="mainTabsContainer">
-          <!-- Render 6 Main Tabs -->
-        </div>
+  <!-- ======================================================== -->
+  <!-- 2. GIAO DIỆN CHÍNH DASHBOARD (CÔNG KHAI) -->
+  <!-- ======================================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+    
+    <!-- Banner kỳ báo cáo ngày 25 -->
+    <div class="mb-5 p-3.5 bg-gradient-to-r from-indigo-50 via-slate-50 to-indigo-50 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+      <div class="flex items-center gap-2.5 text-slate-700">
+        <span class="p-1.5 bg-indigo-100 text-indigo-700 rounded-lg font-bold">📅</span>
+        <span>
+          <b class="text-indigo-900" id="bannerPeriodText">Kỳ Báo Cáo: Tháng 9 • Tuần 34</b> | Chốt số liệu vào <b>ngày 25</b> hàng tháng. 
+          <span id="bannerPeriodNote" class="text-slate-500 italic">(Được quản lý và điều chỉnh bởi Admin Phòng QLCN)</span>
+        </span>
       </div>
+      <div>
+        <button onclick="openLoginModal()" class="text-indigo-600 font-bold hover:text-indigo-800 underline whitespace-nowrap text-left sm:text-right">
+          Cán bộ cơ sở đăng nhập →
+        </button>
+      </div>
+    </div>
 
-      <!-- KHUNG CHÍNH: 2 CỘT -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- HÀNG 6 TAB BÁO CÁO CHÍNH -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">6 Loại Báo Cáo Chuyên Đề:</span>
+        <span class="text-xs text-indigo-600 font-medium">* Bấm chọn báo cáo để xem hoặc nhập số liệu 3 Cơ sở</span>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5" id="mainTabsContainer">
+        <!-- Render 6 Main Tabs -->
+      </div>
+    </div>
 
-        <!-- CỘT TRÁI: TIẾN ĐỘ & BIỂU ĐỒ HOÀN THÀNH (4 Cột) -->
-        <section class="lg:col-span-4 flex flex-col gap-5">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
-              <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
-                Đang thực hiện
-              </span>
-            </div>
-            <div class="mt-3 flex items-baseline justify-between">
-              <span id="overall-percent" class="text-4xl font-black text-slate-900">0%</span>
-              <span id="overall-fraction" class="text-xs font-semibold text-slate-400">0 / 18 cơ sở</span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
-              <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
-            </div>
-          </div>
+    <!-- KHUNG CHÍNH: 2 CỘT -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
-            <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-bold text-slate-900">Biểu Đồ Tỉ Lệ 6 Báo Cáo</h2>
-              <span class="text-[11px] text-slate-400">%</span>
-            </div>
-            <div class="relative h-[290px] w-full">
-              <canvas id="progressChart"></canvas>
-            </div>
-          </div>
-
-          <!-- Nút xuất tổng thể cả 6 báo cáo -->
-          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <button onclick="exportAllMasterExcel()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
-              <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
-              <span>Xuất File Toàn Bộ 6 Báo Cáo (.xlsx)</span>
-            </button>
-          </div>
-        </section>
-
-        <!-- CỘT PHẢI: KHUNG LÀM VIỆC ĐỒNG BỘ 4 TAB CON (8 Cột) -->
-        <section class="lg:col-span-8 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
-          
-          <!-- BẬC 2: THANH 4 TAB CON ÁP DỤNG CHO BÁO CÁO HIỆN TẠI -->
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-4">
-            <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
-              <button onclick="switchSubTab('cs1')" id="subTabBtn_cs1" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                🏢 Báo cáo CS1 (TP.HCM)
-              </button>
-              <button onclick="switchSubTab('cs2')" id="subTabBtn_cs2" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                🏭 Báo cáo CS2 (Bình Dương)
-              </button>
-              <button onclick="switchSubTab('cs3')" id="subTabBtn_cs3" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                🚢 Báo cáo CS3 (BR-VT)
-              </button>
-              <button onclick="switchSubTab('gop')" id="subTabBtn_gop" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
-                📊 Xuất Báo Cáo Tổng
-              </button>
-            </div>
-
-            <!-- Huy hiệu trạng thái -->
-            <span id="csCurrentStatusBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
-              Đã hoàn thành
+      <!-- CỘT TRÁI: TIẾN ĐỘ, BIỂU ĐỒ & NÚT XUẤT WORKBOOK TỔNG HỢP (4 Cột) -->
+      <section class="lg:col-span-4 flex flex-col gap-5">
+        
+        <!-- Thẻ Tiến độ tổng thể -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Tiến độ toàn hệ thống</span>
+            <span id="overall-status-pill" class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800">
+              Đang thực hiện
             </span>
           </div>
+          <div class="mt-3 flex items-baseline justify-between">
+            <span id="overall-percent" class="text-4xl font-black text-slate-900">0%</span>
+            <span id="overall-fraction" class="text-xs font-semibold text-slate-400">0 / 18 cơ sở</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 mt-3 overflow-hidden">
+            <div id="overall-progress-bar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
 
-          <!-- KHUNG RENDER NỘI DUNG THEO MAIN TAB VÀ SUB TAB -->
-          <div id="subTabContentContainer" class="flex-1 flex flex-col justify-between">
-            <!-- Render động bằng JS -->
+        <!-- Biểu đồ Chart.js -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-bold text-slate-900">Biểu Đồ Tỉ Lệ 6 Báo Cáo</h2>
+            <span class="text-[11px] text-slate-400">%</span>
+          </div>
+          <div class="relative h-[290px] w-full">
+            <canvas id="progressChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Nút xuất tổng thể cả 6 báo cáo (Hiển thị rõ tên file kèm kỳ báo cáo) -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <button onclick="exportAllMasterExcel()" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow transition flex flex-col items-center justify-center gap-1">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>
+              <span>Xuất File Toàn Bộ 6 Báo Cáo (.xlsx)</span>
+            </div>
+            <span id="btnMasterExportFileName" class="text-[10px] text-slate-300 font-mono font-normal truncate max-w-full">
+              Capnhatthongke2026_3CS - Tháng 9 - Tuần 34.xlsx
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <!-- CỘT PHẢI: KHUNG LÀM VIỆC 4 TAB CON (8 Cột) -->
+      <section class="lg:col-span-8 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+        
+        <!-- THANH 4 TAB CON ÁP DỤNG ĐỒNG BỘ CHO MỌI BÁO CÁO -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-4">
+          <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
+            <button onclick="switchSubTab('cs1')" id="subTabBtn_cs1" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              🏢 Báo cáo CS1 (TP.HCM)
+            </button>
+            <button onclick="switchSubTab('cs2')" id="subTabBtn_cs2" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              🏭 Báo cáo CS2 (Bình Dương)
+            </button>
+            <button onclick="switchSubTab('cs3')" id="subTabBtn_cs3" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              🚢 Báo cáo CS3 (BR-VT)
+            </button>
+            <button onclick="switchSubTab('gop')" id="subTabBtn_gop" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition">
+              📊 Xuất Báo Cáo Tổng
+            </button>
           </div>
 
-        </section>
+          <!-- Huy hiệu trạng thái -->
+          <span id="csCurrentStatusBadge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+            Đã hoàn thành
+          </span>
+        </div>
 
+        <!-- KHUNG NỘI DUNG FORM NHẬP / BẢNG GỘP -->
+        <div id="subTabContentContainer" class="flex-1 flex flex-col justify-between">
+          <!-- Render động bằng JS -->
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- 3. HỘP THOẠI ĐIỀU CHỈNH KỲ BÁO CÁO (ADMIN - CHỐT NGÀY 25) -->
+  <!-- ======================================================== -->
+  <div id="periodConfigModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 relative">
+      
+      <button onclick="closePeriodConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-amber-100">
+          📅
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Điều Chỉnh Kỳ Báo Cáo & Tên File Gốc</h3>
+          <p class="text-xs text-slate-500">Chức năng quản trị Phòng QLCN (Chốt ngày 25 hàng tháng)</p>
+        </div>
       </div>
-    </main>
+
+      <form onsubmit="handleSavePeriodConfig(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-700 font-bold mb-1">Tên File Excel Gốc*</label>
+          <input type="text" id="cfgTenFileGoc" required oninput="updateFileNamePreview()" placeholder="vd: Capnhatthongke2026_3CS"
+                 class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-semibold focus:ring-2 focus:ring-amber-500" />
+          <span class="text-[10px] text-slate-400">Tên gốc của file báo cáo (không cần gõ đuôi .xlsx)</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-700 font-bold mb-1">Tháng Báo Cáo*</label>
+            <input type="text" id="cfgThang" required oninput="updateFileNamePreview()" placeholder="vd: Tháng 9 hoặc Tháng 10"
+                   class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-amber-500" />
+          </div>
+          <div>
+            <label class="block text-slate-700 font-bold mb-1">Tuần Báo Cáo*</label>
+            <input type="text" id="cfgTuan" required oninput="updateFileNamePreview()" placeholder="vd: Tuần 34 hoặc Tuần 38"
+                   class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-amber-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-700 font-bold mb-1">Ngày Chốt Số Liệu (Quy định: Ngày 25)*</label>
+          <input type="text" id="cfgNgayChot" required placeholder="vd: 25/08/2026 hoặc 25/09/2026"
+                 class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold focus:ring-2 focus:ring-amber-500" />
+        </div>
+
+        <div>
+          <label class="block text-slate-700 font-bold mb-1">Thông báo nhắc nhở gửi 3 Cơ sở</label>
+          <textarea id="cfgGhiChu" rows="2" placeholder="vd: Đề nghị CS1, CS2, CS3 rà soát nộp đúng hạn ngày 25."
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500"></textarea>
+        </div>
+
+        <!-- Khung xem trước tên file xuất tự động -->
+        <div class="p-3 bg-amber-50 rounded-xl border border-amber-200">
+          <span class="font-bold text-amber-900 block text-[11px] mb-1">👀 Xem trước tên file Excel xuất ra:</span>
+          <div id="cfgPreviewFileName" class="font-mono font-bold text-indigo-700 break-all text-xs">
+            Capnhatthongke2026_3CS - Tháng 9 - Tuần 34.xlsx
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="closePeriodConfigModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">
+            Hủy Bỏ
+          </button>
+          <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow transition">
+            💾 Lưu Kỳ Báo Cáo Mới
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 4. HỘP THOẠI ĐĂNG NHẬP (POPUP) -->
+  <!-- ======================================================== -->
+  <div id="loginModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-sm w-full p-6 relative">
+      
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="text-center mb-5">
+        <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center mx-auto mb-2.5 font-bold shadow-md shadow-indigo-100">
+          🔑
+        </div>
+        <h3 class="text-lg font-bold text-slate-900">Đăng Nhập Cán Bộ</h3>
+        <p class="text-xs text-slate-500">Phòng Quản Lý Chăn Nuôi (QLCN)</p>
+      </div>
+
+      <div id="loginModalErrorMsg" class="hidden mb-3 p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+        Tài khoản hoặc mật khẩu không chính xác!
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-700 font-bold mb-1">Tên đăng nhập</label>
+          <input type="text" id="modalUsername" required placeholder="admin / canbo_cs1 / canbo_cs2 / canbo_cs3"
+                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <div>
+          <label class="block text-slate-700 font-bold mb-1">Mật khẩu</label>
+          <input type="password" id="modalPassword" required placeholder="Nhập mật khẩu"
+                 class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-indigo-500" />
+        </div>
+
+        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow transition">
+          Xác Nhận Đăng Nhập
+        </button>
+      </form>
+
+      <div class="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl space-y-1">
+        <div class="flex justify-between font-mono"><span>CS1: canbo_cs1</span><span>Pass: 123456</span></div>
+        <div class="flex justify-between font-mono"><span>CS2: canbo_cs2</span><span>Pass: 123456</span></div>
+        <div class="flex justify-between font-mono"><span>CS3: canbo_cs3</span><span>Pass: 123456</span></div>
+        <div class="flex justify-between font-mono text-indigo-700 font-bold"><span>Admin: admin</span><span>Pass: admin@123</span></div>
+      </div>
+
+    </div>
   </div>
 
 
   <!-- ======================================================== -->
-  <!-- 3. JAVASCRIPT: QUẢN LÝ DỮ LIỆU & GIAO DIỆN -->
+  <!-- 5. JAVASCRIPT: QUY TẮC ĐẶT TÊN FILE EXCEL & LOGIC HỆ THỐNG -->
   <!-- ======================================================== -->
   <script>
     // ------------------------------------------------------------
-    // TÀI KHOẢN VÀ PHÂN QUYỀN
+    // QUẢN LÝ KỲ BÁO CÁO & TÊN FILE EXCEL GỐC
+    // ------------------------------------------------------------
+    const STORAGE_KEY_PERIOD = "app_config_ky_baocao_v3";
+
+    const defaultPeriodConfig = {
+      tenFileGoc: "Capnhatthongke2026_3CS",
+      thang: "Tháng 9",
+      tuan: "Tuần 34",
+      ngayChot: "25/08/2026",
+      ghiChu: "Admin điều chỉnh chốt dữ liệu vào ngày 25 hàng tháng."
+    };
+
+    function getPeriodConfig() {
+      const stored = localStorage.getItem(STORAGE_KEY_PERIOD);
+      return stored ? JSON.parse(stored) : defaultPeriodConfig;
+    }
+
+    function savePeriodConfig(cfg) {
+      localStorage.setItem(STORAGE_KEY_PERIOD, JSON.stringify(cfg));
+    }
+
+    // HÀM TẠO TÊN FILE EXCEL CHUẨN: [Tên file gốc] - [Kỳ báo cáo].xlsx
+    function buildExportFileName(suffixSheet = "") {
+      const cfg = getPeriodConfig();
+      const base = (cfg.tenFileGoc || "Capnhatthongke2026_3CS").trim();
+      const periodStr = `${cfg.thang} - ${cfg.tuan}`.trim();
+      
+      if (suffixSheet) {
+        return `${base}_${suffixSheet} - ${periodStr}.xlsx`;
+      }
+      return `${base} - ${periodStr}.xlsx`;
+    }
+
+    function updateFileNamePreview() {
+      const base = (document.getElementById("cfgTenFileGoc").value || "Capnhatthongke2026_3CS").trim();
+      const thang = (document.getElementById("cfgThang").value || "Tháng 9").trim();
+      const tuan = (document.getElementById("cfgTuan").value || "Tuần 34").trim();
+      document.getElementById("cfgPreviewFileName").innerText = `${base} - ${thang} - ${tuan}.xlsx`;
+    }
+
+    function openPeriodConfigModal() {
+      const cfg = getPeriodConfig();
+      document.getElementById("cfgTenFileGoc").value = cfg.tenFileGoc || "Capnhatthongke2026_3CS";
+      document.getElementById("cfgThang").value = cfg.thang;
+      document.getElementById("cfgTuan").value = cfg.tuan;
+      document.getElementById("cfgNgayChot").value = cfg.ngayChot;
+      document.getElementById("cfgGhiChu").value = cfg.ghiChu || "";
+      updateFileNamePreview();
+      document.getElementById("periodConfigModal").classList.remove("hidden");
+    }
+
+    function closePeriodConfigModal() {
+      document.getElementById("periodConfigModal").classList.add("hidden");
+    }
+
+    function handleSavePeriodConfig(e) {
+      e.preventDefault();
+      const newCfg = {
+        tenFileGoc: document.getElementById("cfgTenFileGoc").value.trim() || "Capnhatthongke2026_3CS",
+        thang: document.getElementById("cfgThang").value.trim(),
+        tuan: document.getElementById("cfgTuan").value.trim(),
+        ngayChot: document.getElementById("cfgNgayChot").value.trim(),
+        ghiChu: document.getElementById("cfgGhiChu").value.trim()
+      };
+      savePeriodConfig(newCfg);
+      closePeriodConfigModal();
+      renderPeriodUI();
+      renderActiveContent();
+      alert(`✓ Đã lưu kỳ báo cáo mới!\nTên file xuất tự động: ${buildExportFileName()}`);
+    }
+
+    function renderPeriodUI() {
+      const cfg = getPeriodConfig();
+      document.getElementById("headerPeriodSubtitle").innerText = `Kỳ Báo Cáo ${cfg.thang} • ${cfg.tuan} (Chốt số liệu ngày ${cfg.ngayChot})`;
+      document.getElementById("bannerPeriodText").innerText = `Kỳ Báo Cáo: ${cfg.thang} • ${cfg.tuan}`;
+      if (cfg.ghiChu) {
+        document.getElementById("bannerPeriodNote").innerText = `(${cfg.ghiChu})`;
+      }
+      // Cập nhật tên file trên nút xuất tổng hợp bên trái
+      document.getElementById("btnMasterExportFileName").innerText = buildExportFileName();
+    }
+
+    // ------------------------------------------------------------
+    // TÀI KHOẢN PHÂN QUYỀN
     // ------------------------------------------------------------
     const defaultUsers = [
       { username: "admin", password: "admin@123", name: "Quản trị viên Hệ thống", role: "admin" },
@@ -221,7 +448,7 @@
       { username: "canbo_cs3", password: "123456", name: "Cán bộ CS3 (Bà Rịa - VT)", role: "user", cs: "cs3" }
     ];
 
-    // CẤU TRÚC 6 BÁO CÁO VỚI BỘ TRƯỜNG DỮ LIỆU CHUYÊN BIỆT
+    // CẤU TRÚC 6 BÁO CÁO CHUYÊN ĐỀ
     const reportConfigs = {
       1: {
         id: 1,
@@ -246,51 +473,48 @@
         id: 2,
         title: "Quy Mô Nông hộ",
         sheetName: "Quy_Mo_Nong_Ho",
-        desc: "Phân loại quy mô trang trại và nông hộ chăn nuôi theo Luật Chăn nuôi",
+        desc: "Phân loại trang trại và quy mô chăn nuôi nông hộ",
         fields: [
-          { key: "trang_trai_lon", label: "Trại quy mô lớn (trang trại)", group: "Phân Loại Trang Trại", def: [18, 142, 65] },
-          { key: "trang_trai_vua", label: "Trại quy mô vừa (trang trại)", group: "Phân Loại Trang Trại", def: [56, 310, 120] },
-          { key: "trang_trai_nho", label: "Trại quy mô nhỏ (trang trại)", group: "Phân Loại Trang Trại", def: [240, 680, 430] },
-          { key: "tong_dan_trang_trai", label: "Tổng đàn nuôi tại trang trại (con)", group: "Phân Loại Trang Trại", def: [120000, 1850000, 950000] },
-          { key: "so_ho_nong_ho", label: "Số lượng hộ chăn nuôi nhỏ lẻ (hộ)", group: "Chăn Nuôi Nông Hộ", def: [6294, 22024, 4117] },
-          { key: "tong_dan_nong_ho", label: "Tổng đàn nuôi tại nông hộ (con)", group: "Chăn Nuôi Nông Hộ", def: [61695, 1035842, 1679031] }
+          { key: "trang_trai_lon", label: "Trang trại quy mô lớn (trại)", group: "Trang Trại", def: [18, 142, 65] },
+          { key: "trang_trai_vua", label: "Trang trại quy mô vừa (trại)", group: "Trang Trại", def: [56, 310, 120] },
+          { key: "trang_trai_nho", label: "Trang trại quy mô nhỏ (trại)", group: "Trang Trại", def: [240, 680, 430] },
+          { key: "so_ho_nong_ho", label: "Số lượng hộ chăn nuôi nhỏ lẻ (hộ)", group: "Nông Hộ", def: [6294, 22024, 4117] },
+          { key: "tong_dan_nong_ho", label: "Tổng đàn nuôi tại nông hộ (con)", group: "Nông Hộ", def: [61695, 1035842, 1679031] }
         ]
       },
       3: {
         id: 3,
         title: "Công Nghệ Cao",
         sheetName: "Cong_Nghe_Cao",
-        desc: "Ứng dụng công nghệ cao, chuồng lạnh, tự động hóa và xử lý chất thải hiện đại",
+        desc: "Ứng dụng công nghệ cao, tự động hóa chuồng trại",
         fields: [
-          { key: "cs_cnc", label: "Số cơ sở chăn nuôi ứng dụng CNC (cơ sở)", group: "Quy Mô Ứng Dụng", def: [24, 186, 78] },
-          { key: "chuong_lanh", label: "Số trại áp dụng chuồng lạnh/làm mát (trại)", group: "Hạ Tầng Kỹ Thuật", def: [35, 240, 95] },
-          { key: "cho_an_tu_dong", label: "Số trại hệ thống máng ăn tự động (trại)", group: "Hạ Tầng Kỹ Thuật", def: [28, 195, 82] },
-          { key: "biogas_hien_dai", label: "Số trại xử lý chất thải / Biogas đạt chuẩn (trại)", group: "Môi Trường", def: [42, 280, 110] },
-          { key: "tong_dan_cnc", label: "Tổng đàn nuôi công nghệ cao (con)", group: "Quy Mô Đàn", def: [95000, 1420000, 780000] }
+          { key: "cs_cnc", label: "Số cơ sở chăn nuôi ứng dụng CNC (cơ sở)", group: "Ứng Dụng CNC", def: [24, 186, 78] },
+          { key: "chuong_lanh", label: "Số trại áp dụng chuồng lạnh/làm mát (trại)", group: "Hạ Tầng", def: [35, 240, 95] },
+          { key: "cho_an_tu_dong", label: "Số trại có hệ thống cho ăn tự động (trại)", group: "Hạ Tầng", def: [28, 195, 82] },
+          { key: "biogas_hien_dai", label: "Số trại Biogas xử lý đạt chuẩn (trại)", group: "Môi Trường", def: [42, 280, 110] }
         ]
       },
       4: {
         id: 4,
         title: "VietGAHP",
         sheetName: "VietGAHP",
-        desc: "Chứng nhận thực hành chăn nuôi tốt VietGAHP (cấp mới, tái cấp, duy trì)",
+        desc: "Chứng nhận thực hành chăn nuôi tốt VietGAHP",
         fields: [
-          { key: "cs_hieu_luc", label: "Số cơ sở VietGAHP còn hiệu lực (cơ sở)", group: "Chứng Nhận VietGAHP", def: [48, 115, 34] },
-          { key: "cs_cap_moi", label: "Số cơ sở được cấp mới trong kỳ (cơ sở)", group: "Chứng Nhận VietGAHP", def: [3, 8, 2] },
-          { key: "cs_tai_cap", label: "Số cơ sở tái cấp / gia hạn (cơ sở)", group: "Chứng Nhận VietGAHP", def: [5, 12, 4] },
-          { key: "tong_dan_vietgahp", label: "Tổng đàn đạt chuẩn VietGAHP (con)", group: "Sản Lượng & Đàn", def: [82000, 650000, 240000] },
-          { key: "san_luong_thit", label: "Sản lượng thịt hơi an toàn (tấn/tháng)", group: "Sản Lượng & Đàn", def: [1250, 4800, 2100] }
+          { key: "cs_hieu_luc", label: "Số cơ sở VietGAHP còn hiệu lực (cơ sở)", group: "Chứng Nhận", def: [48, 115, 34] },
+          { key: "cs_cap_moi", label: "Số cơ sở cấp mới trong kỳ (cơ sở)", group: "Chứng Nhận", def: [3, 8, 2] },
+          { key: "tong_dan_vietgahp", label: "Tổng đàn đạt chuẩn VietGAHP (con)", group: "Sản Lượng", def: [82000, 650000, 240000] },
+          { key: "san_luong_thit", label: "Sản lượng thịt an toàn (tấn/tháng)", group: "Sản Lượng", def: [1250, 4800, 2100] }
         ]
       },
       5: {
         id: 5,
         title: "CS SX Giống",
         sheetName: "CS_SX_Giong",
-        desc: "Cơ sở sản xuất và kinh doanh con giống gia súc, gia cầm",
+        desc: "Cơ sở sản xuất và kinh doanh con giống vật nuôi",
         fields: [
-          { key: "cs_heo_giong", label: "Cơ sở sản xuất giống Heo (cơ sở)", group: "Giống Gia Súc", def: [8, 35, 12] },
-          { key: "cs_bo_giong", label: "Cơ sở nhân giống Bò / tinh bò (cơ sở)", group: "Giống Gia Súc", def: [3, 6, 2] },
-          { key: "cs_gia_cam_giong", label: "Cơ sở ấp nở / giống gia cầm (cơ sở)", group: "Giống Gia Cầm", def: [14, 52, 18] },
+          { key: "cs_heo_giong", label: "Cơ sở sản xuất giống Heo (cơ sở)", group: "Giống Vật Nuôi", def: [8, 35, 12] },
+          { key: "cs_bo_giong", label: "Cơ sở nhân giống Bò / tinh bò (cơ sở)", group: "Giống Vật Nuôi", def: [3, 6, 2] },
+          { key: "cs_gia_cam_giong", label: "Cơ sở giống gia cầm / ấp trứng (cơ sở)", group: "Giống Vật Nuôi", def: [14, 52, 18] },
           { key: "san_luong_giong_xuat", label: "Con giống cung ứng ra thị trường (con/kỳ)", group: "Cung Ứng", def: [45000, 320000, 110000] }
         ]
       },
@@ -298,7 +522,7 @@
         id: 6,
         title: "DS Chim Yến",
         sheetName: "Chim_Yen",
-        desc: "Số liệu khảo sát nhà nuôi chim yến và sản lượng tổ yến khai thác",
+        desc: "Số liệu khảo sát nhà yến và sản lượng tổ yến",
         fields: [
           { key: "chu_nha_yen", label: "Số lượng chủ nhà yến (hộ nuôi)", group: "Nhà Nuôi Yến", def: [558, 685, 458] },
           { key: "so_nha_yen", label: "Số lượng nhà nuôi chim yến (nhà)", group: "Nhà Nuôi Yến", def: [668, 688, 547] },
@@ -308,8 +532,7 @@
       }
     };
 
-    // KHO DỮ LIỆU TỰ ĐỘNG KHỞI TẠO HOÀN CHỈNH CHO CẢ 6 BÁO CÁO CỦA 3 CƠ SỞ
-    const STORAGE_KEY_MASTER = "app_master_data_6reports_v1";
+    const STORAGE_KEY_MASTER = "app_master_data_v7";
 
     function initOrGetMasterData() {
       const stored = localStorage.getItem(STORAGE_KEY_MASTER);
@@ -320,7 +543,7 @@
         initData[repId] = {
           cs1: { completed: true, data: {} },
           cs2: { completed: true, data: {} },
-          cs3: { completed: (repId <= 4), data: {} } // CS3 chưa xong ở mục 5 và 6 theo đúng dữ liệu gốc
+          cs3: { completed: (repId <= 4), data: {} }
         };
         const cfg = reportConfigs[repId];
         cfg.fields.forEach(f => {
@@ -338,40 +561,74 @@
       localStorage.setItem(STORAGE_KEY_MASTER, JSON.stringify(data));
     }
 
-    let currentMainTab = 1; // 1 -> 6
-    let currentSubTab = "cs1"; // cs1, cs2, cs3, gop
+    let currentMainTab = 1;
+    let currentSubTab = "cs1";
     let chartInstance = null;
 
-    // ------------------------------------------------------------
-    // XỬ LÝ ĐĂNG NHẬP / ĐĂNG XUẤT
-    // ------------------------------------------------------------
-    function handleLogin(e) {
+    function getCurrentUser() {
+      const s = sessionStorage.getItem("app_current_user");
+      return s ? JSON.parse(s) : null;
+    }
+
+    function openLoginModal() {
+      document.getElementById("loginModalErrorMsg").classList.add("hidden");
+      document.getElementById("loginModal").classList.remove("hidden");
+    }
+
+    function closeLoginModal() {
+      document.getElementById("loginModal").classList.add("hidden");
+    }
+
+    function handleLoginSubmit(e) {
       e.preventDefault();
-      const u = document.getElementById("loginUsername").value.trim();
-      const p = document.getElementById("loginPassword").value;
+      const u = document.getElementById("modalUsername").value.trim();
+      const p = document.getElementById("modalPassword").value;
       const user = defaultUsers.find(x => x.username.toLowerCase() === u.toLowerCase() && x.password === p);
 
       if (user) {
         sessionStorage.setItem("app_current_user", JSON.stringify(user));
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("mainDashboard").classList.remove("hidden");
-        document.getElementById("navUserName").innerText = user.name;
-        document.getElementById("navUserBadge").innerText = user.role === "admin" ? "Admin" : "Cán bộ";
-
+        closeLoginModal();
         if (user.cs) currentSubTab = user.cs;
+        updateHeaderAuthUI();
         renderAll();
       } else {
-        document.getElementById("loginErrorMsg").classList.remove("hidden");
+        document.getElementById("loginModalErrorMsg").classList.remove("hidden");
       }
     }
 
     function handleLogout() {
       sessionStorage.removeItem("app_current_user");
-      location.reload();
+      updateHeaderAuthUI();
+      renderAll();
+    }
+
+    function updateHeaderAuthUI() {
+      const user = getCurrentUser();
+      const guestArea = document.getElementById("headerGuestArea");
+      const userArea = document.getElementById("headerUserArea");
+      const btnAdminPeriod = document.getElementById("btnAdminPeriodConfig");
+
+      if (user) {
+        guestArea.classList.add("hidden");
+        userArea.classList.remove("hidden");
+
+        document.getElementById("navUserName").innerText = user.name;
+        document.getElementById("navUserBadge").innerText = user.role === "admin" ? "Admin" : "Cán bộ";
+
+        if (user.role === "admin") {
+          btnAdminPeriod.classList.remove("hidden");
+        } else {
+          btnAdminPeriod.classList.add("hidden");
+        }
+      } else {
+        guestArea.classList.remove("hidden");
+        userArea.classList.add("hidden");
+        btnAdminPeriod.classList.add("hidden");
+      }
     }
 
     // ------------------------------------------------------------
-    // RENDER THANH 6 TAB CHÍNH
+    // RENDER HÀNG 6 TAB CHÍNH
     // ------------------------------------------------------------
     function renderMainTabs() {
       const c = document.getElementById("mainTabsContainer");
@@ -402,21 +659,20 @@
               isDone ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
             }">${pct}%</span>
           </div>
-          <span class="text-[10px] text-slate-400 mt-1">${doneCount}/3 CS đã nộp</span>
+          <span class="text-[10px] text-slate-400 mt-1">${doneCount}/3 CS xong</span>
         `;
         c.appendChild(btn);
       });
     }
 
     // ------------------------------------------------------------
-    // RENDER THANH 4 TAB CON & NỘI DUNG TƯƠNG ỨNG
+    // RENDER 4 TAB CON
     // ------------------------------------------------------------
     function renderSubTabsNavigation() {
       const mData = initOrGetMasterData();
       const repState = mData[currentMainTab];
       const cfg = reportConfigs[currentMainTab];
 
-      // Đổi class nút
       ["cs1", "cs2", "cs3", "gop"].forEach(key => {
         const btn = document.getElementById(`subTabBtn_${key}`);
         if (key === currentSubTab) {
@@ -426,7 +682,6 @@
         }
       });
 
-      // Cập nhật huy hiệu góc
       const badge = document.getElementById("csCurrentStatusBadge");
       if (currentSubTab !== "gop") {
         const isDone = repState[currentSubTab].completed;
@@ -434,7 +689,7 @@
           isDone ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
         }`;
         const csNames = { cs1: "CS1 (TP.HCM)", cs2: "CS2 (Bình Dương)", cs3: "CS3 (BR-VT)" };
-        badge.innerText = `${csNames[currentSubTab]}: ${isDone ? "Đã Xong" : "Chưa Hoàn Tất"}`;
+        badge.innerText = `${csNames[currentSubTab]}: ${isDone ? "Đã Xong" : "Chưa Nộp"}`;
       } else {
         badge.className = "text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800";
         badge.innerText = `Bảng Tổng Hợp 3 Cơ Sở - ${cfg.title}`;
@@ -447,24 +702,24 @@
       renderActiveContent();
     }
 
-    // RENDER NỘI DUNG FORM NHẬP (CS1, CS2, CS3) HOẶC BẢNG GỘP (gop)
     function renderActiveContent() {
       const container = document.getElementById("subTabContentContainer");
       const mData = initOrGetMasterData();
       const cfg = reportConfigs[currentMainTab];
       const repState = mData[currentMainTab];
-      const curUser = JSON.parse(sessionStorage.getItem("app_current_user") || "{}");
+      const curUser = getCurrentUser();
+      const periodCfg = getPeriodConfig();
 
-      // 1. NẾU LÀ TAB THỨ 4: XUẤT BÁO CÁO TỔNG
+      // TAB 4: XUẤT BÁO CÁO TỔNG
       if (currentSubTab === "gop") {
-        renderSubTabGop(container, cfg, repState);
+        renderSubTabGop(container, cfg, repState, periodCfg);
         return;
       }
 
-      // 2. NẾU LÀ 3 TAB CƠ SỞ: CS1, CS2, CS3
+      // TAB 1, 2, 3: CS1, CS2, CS3
       const curCSData = repState[currentSubTab].data;
       const isCompleted = repState[currentSubTab].completed;
-      const canEdit = (curUser.role === "admin" || curUser.cs === currentSubTab);
+      const canEdit = curUser && (curUser.role === "admin" || curUser.cs === currentSubTab);
 
       const csInfoMap = {
         cs1: { name: "Cơ Sở 1 (TP.HCM)", areas: "Khu vực 1 (Nội thành), Khu vực 2 (Củ Chi, Hóc Môn, Q.12), Khu vực 3 (Bình Chánh, Nhà Bè, Cần Giờ)" },
@@ -473,7 +728,6 @@
       };
       const csInfo = csInfoMap[currentSubTab];
 
-      // Nhóm các trường theo group
       const groups = {};
       cfg.fields.forEach(f => {
         if (!groups[f.group]) groups[f.group] = [];
@@ -493,7 +747,7 @@
                   <label class="block text-slate-500 mb-1 text-[11px] font-medium">${f.label}</label>
                   <input type="number" id="inp_${f.key}" ${!canEdit ? 'disabled' : ''} 
                          value="${curCSData[f.key] !== undefined ? curCSData[f.key] : 0}" 
-                         class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-indigo-500 bg-white" />
+                         class="w-full p-2 border border-slate-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-indigo-500 ${!canEdit ? 'bg-slate-100 text-slate-600 cursor-not-allowed' : 'bg-white text-slate-900'}" />
                 </div>
               `).join("")}
             </div>
@@ -506,11 +760,11 @@
           <div class="p-3.5 bg-indigo-50/70 rounded-xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <span class="font-bold text-indigo-900 text-sm">${cfg.id}. ${cfg.title} - ${csInfo.name}</span>
-              <p class="text-slate-500 text-[11px] mt-0.5">Địa bàn phụ trách: <b>${csInfo.areas}</b></p>
+              <p class="text-slate-500 text-[11px] mt-0.5">Địa bàn: <b>${csInfo.areas}</b> • Kỳ: <b class="text-indigo-800">${periodCfg.thang} (${periodCfg.tuan})</b></p>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-[11px] font-semibold ${canEdit ? 'text-emerald-700' : 'text-amber-700'}">
-                ${canEdit ? '🟢 Quyền nhập: Đầy đủ' : '🔒 Chế độ: Chỉ xem'}
+              <span class="text-[11px] font-semibold px-2.5 py-1 rounded-lg ${canEdit ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${canEdit ? '🟢 Quyền: Được phép chỉnh sửa' : '🔒 Trạng thái: Chỉ xem (Chưa đăng nhập / Khác CS)'}
               </span>
             </div>
           </div>
@@ -518,33 +772,35 @@
           <form onsubmit="handleSaveCurrentReportCS(event)">
             ${formGroupsHtml}
 
-            ${
-              canEdit ? `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                  <label class="flex items-center gap-2 cursor-pointer select-none">
-                    <input type="checkbox" id="inp_is_completed" ${isCompleted ? "checked" : ""} class="w-4 h-4 text-indigo-600 rounded" />
-                    <span class="font-bold text-slate-700 text-xs">Xác nhận hoàn thành & nộp số liệu ${cfg.title} kỳ này</span>
-                  </label>
-                  <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    <span>Lưu Dữ Liệu ${csInfo.name}</span>
-                  </button>
-                </div>
-              ` : `
-                <div class="p-3 bg-amber-50 text-amber-800 rounded-xl text-xs">
-                  * Bạn đang xem dữ liệu của đơn vị khác. Vui lòng đăng nhập đúng tài khoản cán bộ của cơ sở này hoặc Admin để chỉnh sửa.
-                </div>
-              `
-            }
+            <div class="pt-2">
+              ${
+                canEdit ? `
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" id="inp_is_completed" ${isCompleted ? "checked" : ""} class="w-4 h-4 text-indigo-600 rounded" />
+                      <span class="font-bold text-slate-700 text-xs">Xác nhận đã hoàn tất nộp số liệu ${cfg.title} kỳ ${periodCfg.thang}</span>
+                    </label>
+                    <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow transition flex items-center justify-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                      <span>Lưu Dữ Liệu ${csInfo.name}</span>
+                    </button>
+                  </div>
+                ` : `
+                  <div class="p-3.5 bg-slate-100 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span class="text-slate-600">Bạn đang ở chế độ <b>Chỉ xem</b>. Cán bộ của ${csInfo.name} hoặc Admin vui lòng đăng nhập để lưu hoặc sửa số liệu.</span>
+                    <button type="button" onclick="openLoginModal()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition whitespace-nowrap">
+                      Đăng Nhập Ngay
+                    </button>
+                  </div>
+                `
+              }
+            </div>
           </form>
         </div>
       `;
     }
 
-    // ------------------------------------------------------------
-    // VIEW TAB CON 4: XUẤT BÁO CÁO TỔNG CỦA LOẠI BÁO CÁO ĐANG CHỌN
-    // ------------------------------------------------------------
-    function renderSubTabGop(container, cfg, repState) {
+    function renderSubTabGop(container, cfg, repState, periodCfg) {
       const c1 = repState.cs1.data;
       const c2 = repState.cs2.data;
       const c3 = repState.cs3.data;
@@ -568,13 +824,15 @@
         `;
       });
 
+      // Tên file xuất lẻ mẫu theo quy tắc: [Tên file gốc]_[Tên sheet] - [Kỳ báo cáo].xlsx
+      const singleFileName = buildExportFileName(cfg.sheetName);
+
       container.innerHTML = `
         <div class="space-y-4 text-xs">
-          <!-- Bảng gộp -->
           <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
             <div class="p-3 bg-slate-100 font-bold text-slate-800 flex items-center justify-between">
               <span>BẢNG TỔNG HỢP GỘP: ${cfg.title.toUpperCase()} (3 CƠ SỞ)</span>
-              <span class="text-[11px] font-normal text-slate-500">Đơn vị: Con / Hộ / Trại</span>
+              <span class="text-[11px] font-normal text-slate-500">Kỳ: ${periodCfg.thang} • ${periodCfg.tuan}</span>
             </div>
             <table class="w-full text-left border-collapse">
               <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 text-[11px]">
@@ -592,26 +850,25 @@
             </table>
           </div>
 
-          <!-- Khối nút xuất Excel cho báo cáo này -->
           <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div class="font-bold text-slate-800 text-sm">Xuất Báo Cáo ${cfg.title} (.xlsx)</div>
               <p class="text-slate-500 text-[11px] mt-0.5">
-                Tình trạng: <span class="font-semibold ${allDone ? 'text-emerald-700' : 'text-amber-700'}">${allDone ? '✓ Đã hoàn tất 3/3 cơ sở' : '⚠️ Còn cơ sở chưa hoàn tất'}</span>
+                Tên file xuất: <b class="font-mono text-indigo-700">${singleFileName}</b>
+              </p>
+              <p class="text-slate-500 text-[10px]">
+                Tình trạng: <span class="font-semibold ${allDone ? 'text-emerald-700' : 'text-amber-700'}">${allDone ? '✓ Đã hoàn tất 3/3 cơ sở' : '⚠️ Còn cơ sở chưa nộp'}</span>
               </p>
             </div>
             <button onclick="exportCurrentReportExcel(${cfg.id})" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.5L19 7.5V19a2 2 0 01-2 2z"/></svg>
-              <span>Tải Excel Báo Cáo Này</span>
+              <span>Tải File Excel (.xlsx)</span>
             </button>
           </div>
         </div>
       `;
     }
 
-    // ------------------------------------------------------------
-    // LƯU DỮ LIỆU CỦA CƠ SỞ
-    // ------------------------------------------------------------
     function handleSaveCurrentReportCS(e) {
       e.preventDefault();
       const mData = initOrGetMasterData();
@@ -631,14 +888,10 @@
       renderAll();
     }
 
-    // ------------------------------------------------------------
-    // TÍNH TOÁN TIẾN ĐỘ & BIỂU ĐỒ HOÀN THÀNH
-    // ------------------------------------------------------------
     function updateProgressMetrics() {
       const mData = initOrGetMasterData();
-      let total = 6 * 3; // 18 chỉ tiêu cơ sở
+      let total = 6 * 3;
       let done = 0;
-
       const reportRates = [];
 
       [1, 2, 3, 4, 5, 6].forEach(id => {
@@ -699,16 +952,19 @@
     }
 
     // ------------------------------------------------------------
-    // XUẤT EXCEL: BÁO CÁO ĐANG CHỌN HOẶC TOÀN BỘ 6 BÁO CÁO
+    // XUẤT FILE EXCEL: [TÊN FILE GỐC] - [KỲ BÁO CÁO].xlsx
     // ------------------------------------------------------------
     function exportCurrentReportExcel(repId) {
       const cfg = reportConfigs[repId];
       const mData = initOrGetMasterData();
       const rep = mData[repId];
+      const periodCfg = getPeriodConfig();
       const wb = XLSX.utils.book_new();
 
       const dataAoa = [
-        [`BÁO CÁO TỔNG HỢP: ${cfg.title.toUpperCase()}`],
+        ["HỆ THỐNG QUẢN LÝ & NHẬP LIỆU BÁO CÁO DLCN PHÒNG QLCN"],
+        [`BÁO CÁO CHUYÊN ĐỀ: ${cfg.title.toUpperCase()}`],
+        [`Kỳ Báo Cáo: ${periodCfg.thang} - ${periodCfg.tuan}`, `Ngày chốt số liệu: ${periodCfg.ngayChot}`],
         [`Thời gian xuất: ${new Date().toLocaleString("vi-VN")}`],
         [],
         ["Chỉ tiêu theo dõi", "CS1 (TP.HCM)", "CS2 (Bình Dương)", "CS3 (BR-VT)", "Tổng Gộp (3 CS)"],
@@ -721,17 +977,22 @@
       ];
 
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dataAoa), cfg.sheetName);
-      XLSX.writeFile(wb, `Bao_Cao_${cfg.sheetName}_3CS.xlsx`);
+      
+      // Tên file xuất lẻ: [Tên file gốc]_[Tên sheet] - [Kỳ báo cáo].xlsx
+      const fileName = buildExportFileName(cfg.sheetName);
+      XLSX.writeFile(wb, fileName);
     }
 
     function exportAllMasterExcel() {
       const wb = XLSX.utils.book_new();
       const mData = initOrGetMasterData();
+      const periodCfg = getPeriodConfig();
 
-      // Sheet 1: Tổng quan tiến độ cả 6 báo cáo
+      // Sheet 1: Tổng quan tiến độ
       const summaryRows = [
+        ["HỆ THỐNG QUẢN LÝ & NHẬP LIỆU BÁO CÁO DLCN PHÒNG QLCN"],
         ["BÁO CÁO TỔNG HỢP 6 LOẠI BÁO CÁO - 3 CƠ SỞ"],
-        ["Kỳ chốt số liệu:", "Tuần 34 / Báo Cáo Tháng 9"],
+        [`Kỳ Báo Cáo: ${periodCfg.thang} - ${periodCfg.tuan}`, `Ngày chốt: ${periodCfg.ngayChot}`],
         ["Thời gian xuất:", new Date().toLocaleString("vi-VN")],
         [],
         ["STT", "Loại Báo Cáo", "CS1 (TP.HCM)", "CS2 (Bình Dương)", "CS3 (BR-VT)", "Tỉ Lệ Hoàn Thành"]
@@ -752,13 +1013,14 @@
       });
       XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryRows), "Tong_Hop_Tien_Do");
 
-      // 6 Sheet con tương ứng với 6 loại báo cáo
+      // 6 Sheet con tương ứng 6 chuyên đề
       [1, 2, 3, 4, 5, 6].forEach(id => {
         const cfg = reportConfigs[id];
         const rep = mData[id];
         const sheetAoa = [
-          [`BÁO CÁO CHI TIẾT: ${cfg.title.toUpperCase()}`],
-          [`Địa bàn: 9 Khu vực (CS1, CS2, CS3)`],
+          ["HỆ THỐNG BÁO CÁO DLCN PHÒNG QLCN"],
+          [`BÁO CÁO: ${cfg.title.toUpperCase()}`],
+          [`Kỳ: ${periodCfg.thang} (${periodCfg.tuan}) - Ngày chốt: ${periodCfg.ngayChot}`],
           [],
           ["Chỉ tiêu", "CS1 (TP.HCM)", "CS2 (Bình Dương)", "CS3 (BR-VT)", "TỔNG GỘP"]
         ];
@@ -773,13 +1035,16 @@
         XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sheetAoa), cfg.sheetName);
       });
 
-      XLSX.writeFile(wb, "Bao_Cao_Tong_Hop_6_Chuyen_De_3CS.xlsx");
+      // TÊN FILE WORKBOOK TỔNG HỢP: [Tên file gốc] - [Kỳ báo cáo].xlsx
+      const masterFileName = buildExportFileName();
+      XLSX.writeFile(wb, masterFileName);
     }
 
     // ------------------------------------------------------------
-    // KHỞI CHẠY TỔNG THỂ
+    // KHỞI CHẠY HỆ THỐNG
     // ------------------------------------------------------------
     function renderAll() {
+      renderPeriodUI();
       renderMainTabs();
       renderSubTabsNavigation();
       renderActiveContent();
@@ -788,16 +1053,8 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      const activeUser = sessionStorage.getItem("app_current_user");
-      if (activeUser) {
-        const u = JSON.parse(activeUser);
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("mainDashboard").classList.remove("hidden");
-        document.getElementById("navUserName").innerText = u.name;
-        document.getElementById("navUserBadge").innerText = u.role === "admin" ? "Admin" : "Cán bộ";
-        if (u.cs) currentSubTab = u.cs;
-        renderAll();
-      }
+      updateHeaderAuthUI();
+      renderAll();
     });
   </script>
 </body>
